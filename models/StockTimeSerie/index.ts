@@ -24,4 +24,5 @@ const StockTimeSerieSchema = new Schema({
 });
 
 export default models.StockTimeSerie ||
-  model("StockTimeSerie", StockTimeSerieSchema);
+  model( "StockTimeSerie", StockTimeSerieSchema );
+  
