@@ -1,8 +1,7 @@
 export interface IStockMetaData {
-  Information: string;
-  Symbol: string;
-  LastRefreshed: string;
-  Interval: string;
-  OutputSize: string;
-  TimeZone: string;
+  symbol: string;
+  name: string;
+  type: string;
+  region: string;
+  currency: string;
 }
