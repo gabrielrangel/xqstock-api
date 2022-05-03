@@ -1,4 +1,4 @@
-export default interface IMetaData {
+export interface IStockMetaData {
   Information: string;
   Symbol: string;
   LastRefreshed: string;
