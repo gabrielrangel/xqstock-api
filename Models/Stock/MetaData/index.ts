@@ -1,6 +1,8 @@
 import { Schema, models, model } from "mongoose";
 import { IStockMetaData } from "./types";
 
+export * from "./types";
+
 export const StockMetadataSchema = new Schema<IStockMetaData>({
   symbol: { type: String, required: true, unique: true },
   name: { type: String, required: true },

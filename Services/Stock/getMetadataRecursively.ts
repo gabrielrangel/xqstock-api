@@ -1,8 +1,12 @@
 import dbConnect from "@lib/dbConnect";
-import StockMetaDataModel from "@api/Models/Stock/MetaData";
+import StockMetaDataModel, { IStockMetaData } from "@api/Models/Stock/MetaData";
 import AlphaAdvantageApi from "@lib/AlphaAdvantageApi";
+import normalizeAlphaAdvantageObjKeys from "@lib/AlphaAdvantageApi/util/normalizeAlphaAdvantageObjKeys";
 
-export default async function getMetadataRecursively(symbol: string) {
+export default async function getMetadataRecursively(
+  symbol: string,
+  _retry: boolean = true
+): Promise<IStockMetaData | null> {
   await dbConnect();
 
   let StockMetaData = await StockMetaDataModel.findOne({ symbol }).exec();
@@ -15,10 +19,20 @@ export default async function getMetadataRecursively(symbol: string) {
   const { bestMatches } = await alphaAdvantage.symbolSearch(symbol);
   const [firstMatch] = bestMatches;
 
-  const data = Object.entries(firstMatch).reduce((acc, [rawKey, value]) => {
-    const key = rawKey.replace(/\d+\.|\s/g, "");
-    return { ...acc, [key]: value };
-  }, {} as Record<string, string>);
+  if (!firstMatch) {
+    return null;
+  }
 
-  return StockMetaDataModel.create(data);
+  const data = normalizeAlphaAdvantageObjKeys(firstMatch) as IStockMetaData;
+
+  try {
+    StockMetaData = await StockMetaDataModel.create(data);
+  } catch (e) {
+    if (_retry && e?.name === "MongoServerError" && e?.code === 11000) {
+      return getMetadataRecursively(data.symbol, false);
+    }
+    throw e;
+  }
+
+  return StockMetaData;
 }
