@@ -35,8 +35,14 @@ export default async function getIntradayTimeSeriesRecursively(symbol: string) {
     []
   );
 
-  return StockIntradayTimeSeriesModel.create({
-    symbol: metadata.symbol,
-    timeSeries,
-  });
+  await Promise.all(
+    timeSeries.map((timeserie) =>
+      StockIntradayTimeSeriesModel.create({
+        ...timeserie,
+        symbol: metadata.symbol,
+      })
+    )
+  );
+
+  return StockIntradayTimeSeriesModel.find({ symbol: metadata.symbol });
 }
