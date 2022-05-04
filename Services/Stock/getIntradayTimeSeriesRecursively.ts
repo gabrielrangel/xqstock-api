@@ -1,24 +1,26 @@
+import { StockTimeSerieKindEnum } from "./../../Models/Stock/TimeSeries/types";
 import { IStockMetaData } from "@api/Models/Stock/MetaData";
 import AlphaAdvantageApi from "@lib/AlphaAdvantageApi";
-import StockIntradayTimeSeriesModel from "@api/Models/Stock/IntradayTimeSeries";
+import StockIntradayTimeSeriesModel, {
+  IStockTimeSerie,
+} from "@api/Models/Stock/TimeSeries";
 import dbConnect from "@lib/dbConnect";
 import normalizeAlphaAdvantageObjKeys from "@lib/AlphaAdvantageApi/util/normalizeAlphaAdvantageObjKeys";
 import { QueryWithHelpers, FilterQuery } from "mongoose";
-import { IStockIntradayTimeSerie } from "@api/Models/Stock/IntradayTimeSeries/types";
 
 export default async function getIntradayTimeSeriesRecursively(
   { symbol }: IStockMetaData,
-  filter: FilterQuery<IStockIntradayTimeSerie>
-): Promise<
-  QueryWithHelpers<IStockIntradayTimeSerie[], IStockIntradayTimeSerie>
-> {
+  filter: FilterQuery<IStockTimeSerie> = {}
+): Promise<QueryWithHelpers<IStockTimeSerie[], IStockTimeSerie>> {
   await dbConnect();
 
+  Object.assign(filter, { symbol, kind: StockTimeSerieKindEnum.INTRADAY });
+
   const StockIntradayTimeSeries = await StockIntradayTimeSeriesModel.find(
-    Object.assign(filter, { symbol })
+    filter
   ).exec();
 
-  if (StockIntradayTimeSeries) {
+  if (StockIntradayTimeSeries.length) {
     return StockIntradayTimeSeries;
   }
 
@@ -37,9 +39,14 @@ export default async function getIntradayTimeSeriesRecursively(
 
   await Promise.all(
     timeSeries.map((timeserie) =>
-      StockIntradayTimeSeriesModel.create(Object.assign(timeserie, { symbol }))
+      StockIntradayTimeSeriesModel.create(
+        Object.assign(timeserie, {
+          symbol,
+          kind: StockTimeSerieKindEnum.INTRADAY,
+        })
+      )
     )
   );
 
-  return StockIntradayTimeSeriesModel.find(Object.assign(filter, { symbol }));
+  return StockIntradayTimeSeriesModel.find(filter);
 }
