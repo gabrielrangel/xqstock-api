@@ -8,7 +8,6 @@ export default function findAllBySymbolAndPeriod(
   startDate: string,
   endDate: string
 ): Promise<Query<IStockTimeSerie[], IStockTimeSerie, {}, IStockTimeSerie>> {
-  console.log({ startDate, endDate });
   return getIntradayTimeSeriesRecursively(metadata, {
     date: {
       $gte: new Date(startDate),
