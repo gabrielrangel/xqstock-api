@@ -13,5 +13,5 @@ export const StockIntradayTimeSerieSchema = new Schema<IStockIntradayTimeSerie>(
 
 StockIntradayTimeSerieSchema.index({ symbol: 1, date: 1 }, { unique: true });
 
-export default models.IntradayTimeSerieSchema ||
+export default models.StockIntradayTimeSerie ||
   model("StockIntradayTimeSerie", StockIntradayTimeSerieSchema);
