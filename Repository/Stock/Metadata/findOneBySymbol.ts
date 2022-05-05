@@ -6,7 +6,7 @@ import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 
 export async function findOneBySymbol(symbol: string) {
   const filter: FilterQuery<IMetadataSymbolSearch> = {
-    Symbol,
+    Symbol: { $regex: symbol, $options: 'i' },
   };
 
   await dbConnect();
