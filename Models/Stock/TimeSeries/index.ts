@@ -25,7 +25,7 @@ export const StockTimeSerieSchema = new Schema<IStockTimeSerie>({
   },
 });
 
-StockTimeSerieSchema.index({ symbol: 1, date: 1, kind: 1 }, { unique: true });
+StockTimeSerieSchema.index({ Symbol: 1, Date: 1, Kind: 1 }, { unique: true });
 
 export const StockTimeSerieModel =
   models.StockTimeSerie || model("StockTimeSerie", StockTimeSerieSchema);
