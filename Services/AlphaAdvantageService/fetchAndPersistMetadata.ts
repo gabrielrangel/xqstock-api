@@ -1,9 +1,9 @@
-import dbConnect from "@lib/dbConnect";
+import dbConnect from "@api/lib/dbConnect";
 import StockMetaDataModel from "@api/Models/Stock/Metadata";
 
 import AlphaAdvantageApi, {
   IMetadataSymbolSearch,
-} from "@lib/AlphaAdvantageApi";
+} from "@api/lib/AlphaAdvantageApi";
 
 export async function fetchAndPersistMetadata(
   Symbol: string,

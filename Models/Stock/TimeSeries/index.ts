@@ -1,4 +1,4 @@
-import { ITimeSerie } from "@lib/AlphaAdvantageApi";
+import { ITimeSerie } from "@api/lib/AlphaAdvantageApi";
 import { Schema, model, models } from "mongoose";
 import { StockTimeSerieKindEnum } from "./types";
 

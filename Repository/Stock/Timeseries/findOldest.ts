@@ -1,7 +1,7 @@
 import StockTimeSerieModel, {
   IStockTimeSerie,
 } from "@api/Models/Stock/TimeSeries";
-import dbConnect from "@lib/dbConnect";
+import dbConnect from "@api/lib/dbConnect";
 
 import { FilterQuery, Query } from "mongoose";
 

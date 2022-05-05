@@ -1,10 +1,10 @@
 import { AlphaAdvantageService } from "@api/Services/AlphaAdvantageService/index";
-import dbConnect from "@lib/dbConnect";
+import dbConnect from "@api/lib/dbConnect";
 import StockTimeSerieModel, {
   IStockTimeSerie,
 } from "@api/Models/Stock/TimeSeries";
 import { Query, FilterQuery } from "mongoose";
-import { IMetadata } from "@lib/AlphaAdvantageApi";
+import { IMetadata } from "@api/lib/AlphaAdvantageApi";
 import findOldestBySymbol from "./findOldestBySymbol";
 
 export async function findByMetadataAndPeriod(

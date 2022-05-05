@@ -1,4 +1,4 @@
-import { IMetadataSymbolSearch } from "@lib/AlphaAdvantageApi/types/IMetadata";
+import { IMetadataSymbolSearch } from "@api/lib/AlphaAdvantageApi/types/IMetadata";
 import { Schema, models, model } from "mongoose";
 
 export const StockMetadataSchema = new Schema<Partial<IMetadataSymbolSearch>>({

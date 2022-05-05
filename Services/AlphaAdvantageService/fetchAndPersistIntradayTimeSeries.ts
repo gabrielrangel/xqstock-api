@@ -1,12 +1,12 @@
 import { StockTimeSerieKindEnum } from "@api/Models/Stock/TimeSeries/types";
-import dbConnect from "@lib/dbConnect";
+import dbConnect from "@api/lib/dbConnect";
 import { QueryWithHelpers } from "mongoose";
 import dateDiffInDays from "@api/util/DateUtils/dateDiffInDays";
 import { DateUtils } from "@api/util/DateUtils";
 
 import AlphaAdvantageApi, {
   IMetadataSymbolSearch,
-} from "@lib/AlphaAdvantageApi";
+} from "@api/lib/AlphaAdvantageApi";
 
 import StockIntradayTimeSeriesModel, {
   IStockTimeSerie,
