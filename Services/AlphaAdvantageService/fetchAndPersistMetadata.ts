@@ -1,6 +1,5 @@
 import dbConnect from "@lib/dbConnect";
 import StockMetaDataModel from "@api/Models/Stock/Metadata";
-import MetadataRepository from "@api/Repository/Stock/Metadata";
 
 import AlphaAdvantageApi, {
   IMetadataSymbolSearch,
@@ -11,7 +10,8 @@ export async function fetchAndPersistMetadata(
   _retry: boolean = true
 ): Promise<Partial<IMetadataSymbolSearch> | null> {
   const Bestmatch = await AlphaAdvantageApi.symbolSearch(Symbol).then(
-    ({ Bestmatches }) => Bestmatches.pop()
+    ({ Bestmatches }) =>
+      Bestmatches.filter(({ Matchscore }) => parseFloat(Matchscore) >= 1).pop()
   );
 
   if (!Bestmatch) {
@@ -22,7 +22,7 @@ export async function fetchAndPersistMetadata(
 
   return StockMetaDataModel.create(Bestmatch).catch((e) => {
     if (e?.name === "MongoServerError" && e?.code === 11000) {
-      return MetadataRepository.find({ Symbol: Bestmatch.Symbol });
+      return StockMetaDataModel.findOne({ Symbol: Bestmatch.Symbol });
     }
 
     throw e;

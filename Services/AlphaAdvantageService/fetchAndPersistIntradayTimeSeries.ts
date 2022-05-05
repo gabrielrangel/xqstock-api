@@ -1,9 +1,8 @@
-import { getLastWeekday } from "@api/util/getLastWeekday";
 import { StockTimeSerieKindEnum } from "@api/Models/Stock/TimeSeries/types";
 import dbConnect from "@lib/dbConnect";
 import { QueryWithHelpers } from "mongoose";
-import TimeSeriesRepository from "@api/Repository/Stock/Timeseries";
 import dateDiffInDays from "@api/util/DateUtils/dateDiffInDays";
+import { DateUtils } from "@api/util/DateUtils";
 
 import AlphaAdvantageApi, {
   IMetadataSymbolSearch,
@@ -18,9 +17,9 @@ export async function fetchAndPersistIntradayTimeSeries(
   startDate: Date = null,
   endDate: Date = new Date(Date.now())
 ): Promise<QueryWithHelpers<IStockTimeSerie[], IStockTimeSerie>> {
-  const extraObj = { Kind: StockTimeSerieKindEnum.INTRADAY };
+  const extraObj = { Kind: StockTimeSerieKindEnum.INTRADAY, Symbol };
 
-  const outputCount = dateDiffInDays(getLastWeekday(), startDate);
+  const outputCount = dateDiffInDays(DateUtils.getLastWeekday(), startDate);
   const outputSize = outputCount < 100 ? "compact" : "full";
 
   const TimeSeries: IStockTimeSerie[] =
@@ -39,12 +38,12 @@ export async function fetchAndPersistIntradayTimeSeries(
     )
   );
 
-  return TimeSeriesRepository.find({
+  return StockIntradayTimeSeriesModel.find({
     Kind: "intraday",
     Symbol,
     Date: {
-      $leq: new Date(endDate),
-      $geq: new Date(startDate),
+      $lte: new Date(endDate),
+      $gte: new Date(startDate),
     },
   });
 }

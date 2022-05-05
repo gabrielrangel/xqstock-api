@@ -1,24 +1,25 @@
+import { dbConnect } from "@lib/dbConnect";
+import { StockMetaDataModel } from "@api/Models/Stock/Metadata";
 import { FilterQuery } from "mongoose";
-import getMetadataRecursively from "@api/Services/Stock/getMetadataRecursively";
 import { IMetadataSymbolSearch } from "@lib/AlphaAdvantageApi";
-import MetadataRepository from ".";
+import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 
 export async function findOneBySymbol(symbol: string) {
   const filter: FilterQuery<IMetadataSymbolSearch> = {
-    Symbol: {
-      $regex: `^${Symbol}`,
-    },
+    Symbol,
   };
 
-  const StockMetaData: IMetadataSymbolSearch = await MetadataRepository.findOne(
+  await dbConnect();
+
+  const StockMetaData: IMetadataSymbolSearch = await StockMetaDataModel.findOne(
     filter
   ).exec();
 
-  if (StockMetaData && symbol.length / StockMetaData.Symbol.length >= 0.65) {
+  if (StockMetaData) {
     return StockMetaData;
   }
 
-  return getMetadataRecursively(symbol);
+  return AlphaAdvantageService.fetchAndPersistMetadata(symbol);
 }
 
 export default findOneBySymbol;

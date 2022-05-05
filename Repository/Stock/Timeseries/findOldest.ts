@@ -1,12 +1,15 @@
-import { TimeSeriesRepository } from "./index";
-import { IStockTimeSerie } from "@api/Models/Stock/TimeSeries";
+import StockTimeSerieModel, {
+  IStockTimeSerie,
+} from "@api/Models/Stock/TimeSeries";
+import dbConnect from "@lib/dbConnect";
 
 import { FilterQuery, Query } from "mongoose";
 
-export function findOldest(
+export async function findOldest(
   filter: FilterQuery<IStockTimeSerie> = {}
-): Query<IStockTimeSerie, IStockTimeSerie> {
-  return TimeSeriesRepository.findOne(filter).sort({ Date: 1 });
+): Promise<Query<IStockTimeSerie, IStockTimeSerie> | IStockTimeSerie> {
+  await dbConnect();
+  return StockTimeSerieModel.findOne(filter).sort({ Date: 1 });
 }
 
 export default findOldest;

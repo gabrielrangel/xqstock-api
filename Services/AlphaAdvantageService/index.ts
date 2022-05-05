@@ -5,3 +5,5 @@ export const AlphaAdvantageService = {
   fetchAndPersistIntradayTimeSeries,
   fetchAndPersistMetadata,
 };
+
+export default AlphaAdvantageService;
