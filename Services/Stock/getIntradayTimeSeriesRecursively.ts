@@ -1,20 +1,20 @@
-import { StockTimeSerieKindEnum } from "./../../Models/Stock/TimeSeries/types";
-import { IStockMetaData } from "@api/Models/Stock/MetaData";
-import AlphaAdvantageApi from "@lib/AlphaAdvantageApi";
+import { StockTimeSerieKindEnum } from "@api/Models/Stock/TimeSeries/types";
+import AlphaAdvantageApi, {
+  IMetadataSymbolSearch,
+} from "@lib/AlphaAdvantageApi";
 import StockIntradayTimeSeriesModel, {
   IStockTimeSerie,
 } from "@api/Models/Stock/TimeSeries";
 import dbConnect from "@lib/dbConnect";
-import normalizeAlphaAdvantageObjKeys from "@lib/AlphaAdvantageApi/util/normalizeAlphaAdvantageObjKeys";
 import { QueryWithHelpers, FilterQuery } from "mongoose";
 
 export default async function getIntradayTimeSeriesRecursively(
-  { symbol }: IStockMetaData,
+  { Symbol }: Partial<IMetadataSymbolSearch>,
   filter: FilterQuery<IStockTimeSerie> = {}
 ): Promise<QueryWithHelpers<IStockTimeSerie[], IStockTimeSerie>> {
   await dbConnect();
 
-  Object.assign(filter, { symbol, kind: StockTimeSerieKindEnum.INTRADAY });
+  Object.assign(filter, { Symbol, Kind: StockTimeSerieKindEnum.INTRADAY });
 
   const StockIntradayTimeSeries = await StockIntradayTimeSeriesModel.find(
     filter
@@ -24,27 +24,22 @@ export default async function getIntradayTimeSeriesRecursively(
     return StockIntradayTimeSeries;
   }
 
-  const { ["Time Series (Daily)"]: data } =
-    await AlphaAdvantageApi().timeSeriesDaily(symbol, "full");
-
-  const timeSeries = Object.entries(data).reduce(
-    (acc, [date, dataObj]) => [
-      ...acc,
-      Object.assign(normalizeAlphaAdvantageObjKeys(dataObj), {
-        date: new Date(date),
-      }),
-    ],
-    []
+  const TimeSeries = await AlphaAdvantageApi.timeSeriesIntradayExtended(
+    Symbol,
+    "full"
+  ).then(({ TimeSeries: data }) =>
+    Object.entries(data).map(([Date, dataObj]) =>
+      Object.assign(dataObj, {
+        Date,
+        Symbol,
+        Kind: StockTimeSerieKindEnum.INTRADAY,
+      })
+    )
   );
 
   await Promise.all(
-    timeSeries.map((timeserie) =>
-      StockIntradayTimeSeriesModel.create(
-        Object.assign(timeserie, {
-          symbol,
-          kind: StockTimeSerieKindEnum.INTRADAY,
-        })
-      )
+    TimeSeries.map((timeserie) =>
+      StockIntradayTimeSeriesModel.create(timeserie)
     )
   );
 

@@ -12,7 +12,7 @@ export default async function getQuotesBySymbol (
     startDate && endDate
       ? TimeSeriesIntradayRepository.findAllBySymbolAndPeriod
       : TimeSeriesIntradayRepository.findAllBySymbol;
-
+  
   const timeseries = await query(metadata, startDate, endDate);
 
   return {metadata, timeseries}

@@ -1,17 +1,24 @@
+import { ITimeSerie } from "@lib/AlphaAdvantageApi";
 import { Schema, model, models } from "mongoose";
-import { IStockTimeSerie, StockTimeSerieKindEnum } from "./types";
+import { StockTimeSerieKindEnum } from "./types";
 
 export * from "./types";
 
+export interface IStockTimeSerie extends Partial<ITimeSerie> {
+  Symbol: string;
+  Date: Date;
+  Kind: string;
+}
+
 export const StockTimeSeriSchema = new Schema<IStockTimeSerie>({
-  symbol: { type: String, required: true },
-  date: { type: Date, required: true },
-  open: { type: String, required: true },
-  high: { type: String, required: true },
-  low: { type: String, required: true },
-  close: { type: String, required: true },
-  volume: { type: String, required: true },
-  kind: {
+  Symbol: { type: String, required: true },
+  Date: { type: Date, required: true },
+  Open: { type: String, required: true },
+  High: { type: String, required: true },
+  Low: { type: String, required: true },
+  Close: { type: String, required: true },
+  Volume: { type: String, required: true },
+  Kind: {
     type: String,
     enum: Object.values(StockTimeSerieKindEnum),
     required: true,

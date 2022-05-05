@@ -1,7 +1,6 @@
 import dbConnect from "@lib/dbConnect";
 import StockMetaDataModel, { IStockMetaData } from "@api/Models/Stock/MetaData";
 import AlphaAdvantageApi from "@lib/AlphaAdvantageApi";
-import normalizeAlphaAdvantageObjKeys from "@lib/AlphaAdvantageApi/util/normalizeAlphaAdvantageObjKeys";
 
 export default async function getMetadataRecursively(
   symbol: string,
@@ -15,15 +14,12 @@ export default async function getMetadataRecursively(
     return StockMetaData;
   }
 
-  const alphaAdvantage = AlphaAdvantageApi();
-  const { bestMatches } = await alphaAdvantage.symbolSearch(symbol);
-  const [firstMatch] = bestMatches;
+  const { Bestmatches } = await AlphaAdvantageApi.symbolSearch(symbol);
+  const data = Bestmatches.pop();
 
-  if (!firstMatch) {
+  if (!data) {
     return null;
   }
-
-  const data = normalizeAlphaAdvantageObjKeys(firstMatch) as IStockMetaData;
 
   try {
     StockMetaData = await StockMetaDataModel.create(data);
