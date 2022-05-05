@@ -1,4 +1,3 @@
-import { StockMetaDataModel } from "@api/Models/Stock/Metadata";
 import { IMetadataSymbolSearch } from "@lib/AlphaAdvantageApi/types/IMetadata";
 import { Schema, models, model } from "mongoose";
 
