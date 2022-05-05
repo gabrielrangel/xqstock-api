@@ -2,7 +2,7 @@ import { NotFound } from "@api/Error/Http";
 import { MetadataRepository } from "@api/Repository/Stock/Metadata/index";
 import IntradayTimeSeriesRepository from "@api/Repository/Stock/Timeseries/Intraday";
 
-export default async function getQuotesBySymbol(
+export async function getQuotesBySymbol(
   symbol: string,
   startDate?: string,
   endDate?: string
@@ -22,3 +22,5 @@ export default async function getQuotesBySymbol(
 
   return { metadata, timeseries };
 }
+
+export default getQuotesBySymbol;
