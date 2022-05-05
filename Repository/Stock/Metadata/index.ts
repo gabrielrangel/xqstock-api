@@ -1,6 +1,6 @@
-import StockTimeSerieModel from "@api/Models/Stock/TimeSeries";
-import { findOldest } from "./findOldest";
-export * from "./Intraday";
+import { StockMetaDataModel } from "@api/Models/Stock/Metadata";
+import findOneBySymbol from "./findOneBySymbol";
+export * from "./findOneBySymbol";
 
 const {
   deleteMany,
@@ -18,9 +18,9 @@ const {
   replaceOne,
   updateMany,
   updateOne,
-} = StockTimeSerieModel;
+} = StockMetaDataModel;
 
-export const TimeSeriesRepository = {
+export const MetadataRepository = {
   deleteMany,
   deleteOne,
   find,
@@ -36,7 +36,7 @@ export const TimeSeriesRepository = {
   replaceOne,
   updateMany,
   updateOne,
-  findOldest,
+  findOneBySymbol,
 };
 
-export default TimeSeriesRepository;
+export default MetadataRepository;

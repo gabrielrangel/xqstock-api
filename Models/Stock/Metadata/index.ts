@@ -1,3 +1,4 @@
+import { StockMetaDataModel } from "@api/Models/Stock/Metadata";
 import { IMetadataSymbolSearch } from "@lib/AlphaAdvantageApi/types/IMetadata";
 import { Schema, models, model } from "mongoose";
 
@@ -9,5 +10,7 @@ export const StockMetadataSchema = new Schema<Partial<IMetadataSymbolSearch>>({
   Currency: { type: String, required: true },
 });
 
-export default models.StockMetadata ||
-  model("StockMetadata", StockMetadataSchema);
+export const StockMetaDataModel =
+  models.StockMetadata || model("StockMetadata", StockMetadataSchema);
+
+export default StockMetaDataModel;

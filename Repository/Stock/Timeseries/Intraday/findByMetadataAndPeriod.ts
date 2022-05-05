@@ -1,17 +1,18 @@
-import { IStockMetaData } from "@api/Models/Stock/MetaData";
 import getIntradayTimeSeriesRecursively from "@api/Services/Stock/getIntradayTimeSeriesRecursively";
 import { IStockTimeSerie } from "@api/Models/Stock/TimeSeries";
 import { Query } from "mongoose";
+import { IMetadata } from "@lib/AlphaAdvantageApi";
 
-export default function findAllBySymbolAndPeriod(
-  metadata: IStockMetaData,
+export function findByMetadataAndPeriod(
+  metadata: Partial<IMetadata>,
   startDate: string,
   endDate: string
 ): Promise<Query<IStockTimeSerie[], IStockTimeSerie, {}, IStockTimeSerie>> {
-  return getIntradayTimeSeriesRecursively(metadata, {
-    date: {
-      $gte: new Date(startDate),
-      $lte: new Date(endDate),
-    },
-  });
+  return getIntradayTimeSeriesRecursively(
+    metadata,
+    new Date(startDate),
+    new Date(endDate)
+  );
 }
+
+export default findByMetadataAndPeriod;

@@ -1,12 +1,20 @@
-import findAllBySymbol from "./findAllBySymbol";
-export * from "./findAllBySymbol";
+import findByMetadata from "./findByMetadata";
+export * from "./findByMetadata";
 
-import findAllBySymbolAndPeriod from "./findAllBySymbolAndPeriod";
-export * from "./findAllBySymbolAndPeriod";
+import findByMetadataAndPeriod from "./findByMetadataAndPeriod";
+export * from "./findByMetadataAndPeriod";
+
+import findOldest from "../findOldest";
+export * from "../findOldest";
+
+import findOldestBySymbol from "./findOldestBySymbol";
+export * from "../findOldest";
 
 export const TimeSeriesIntradayRepository = {
-  findAllBySymbol,
-  findAllBySymbolAndPeriod,
+  findByMetadata,
+  findByMetadataAndPeriod,
+  findOldest,
+  findOldestBySymbol,
 };
 
 export default TimeSeriesIntradayRepository;
