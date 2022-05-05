@@ -1,17 +1,44 @@
-import getIntradayTimeSeriesRecursively from "@api/Services/Stock/getIntradayTimeSeriesRecursively";
+import { AlphaAdvantageService } from "../../../../Services/AlphaAdvantageService/index";
+import dbConnect from "@lib/dbConnect";
 import { IStockTimeSerie } from "@api/Models/Stock/TimeSeries";
-import { Query } from "mongoose";
+import { Query, FilterQuery } from "mongoose";
 import { IMetadata } from "@lib/AlphaAdvantageApi";
+import { IntradayTimeSeriesRepository } from "..";
+import { TimeSeriesRepository } from "..";
 
-export function findByMetadataAndPeriod(
+export async function findByMetadataAndPeriod(
   metadata: Partial<IMetadata>,
-  startDate: string,
-  endDate: string
+  endDate: string | Date,
+  startDate?: string | Date
 ): Promise<Query<IStockTimeSerie[], IStockTimeSerie, {}, IStockTimeSerie>> {
-  return getIntradayTimeSeriesRecursively(
+  const { Symbol } = metadata;
+
+  const filter: FilterQuery<IStockTimeSerie> = {
+    Kind: "intraday",
+    Symbol,
+    Date: {
+      $leq: new Date(endDate),
+    },
+  };
+
+  if (startDate) {
+    filter.Date["$geq"] = new Date(startDate);
+  }
+
+  await dbConnect();
+
+  const oldest = await IntradayTimeSeriesRepository.findOldestBySymbol(
+    Symbol
+  ).exec();
+
+  if (oldest?.Date < new Date(endDate)) {
+    return TimeSeriesRepository.find(filter);
+  }
+
+  return AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
     metadata,
-    new Date(startDate),
-    new Date(endDate)
+    new Date(endDate),
+    new Date(startDate)
   );
 }
 

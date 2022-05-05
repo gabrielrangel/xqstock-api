@@ -6,12 +6,13 @@ import AlphaAdvantageApi, {
   IMetadataSymbolSearch,
 } from "@lib/AlphaAdvantageApi";
 
-export default async function getMetadataRecursively(
+export async function fetchAndPersistMetadata(
   Symbol: string,
   _retry: boolean = true
 ): Promise<Partial<IMetadataSymbolSearch> | null> {
-  const { Bestmatches } = await AlphaAdvantageApi.symbolSearch(Symbol);
-  const Bestmatch = Bestmatches.pop();
+  const Bestmatch = await AlphaAdvantageApi.symbolSearch(Symbol).then(
+    ({ Bestmatches }) => Bestmatches.pop()
+  );
 
   if (!Bestmatch) {
     return null;
@@ -27,3 +28,5 @@ export default async function getMetadataRecursively(
     throw e;
   });
 }
+
+export default fetchAndPersistMetadata;

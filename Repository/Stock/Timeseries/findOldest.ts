@@ -5,7 +5,7 @@ import { FilterQuery, Query } from "mongoose";
 
 export function findOldest(
   filter: FilterQuery<IStockTimeSerie> = {}
-): Query<any, any, {}, any> {
+): Query<IStockTimeSerie, IStockTimeSerie> {
   return TimeSeriesRepository.findOne(filter).sort({ Date: 1 });
 }
 

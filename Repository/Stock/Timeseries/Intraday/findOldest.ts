@@ -1,4 +1,4 @@
-import { TimeSeriesRepository } from "./../index";
+import { TimeSeriesRepository } from "../index";
 import { IStockTimeSerie } from "@api/Models/Stock/TimeSeries";
 import { FilterQuery } from "mongoose";
 

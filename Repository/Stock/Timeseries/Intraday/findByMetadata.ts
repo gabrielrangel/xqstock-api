@@ -1,10 +1,10 @@
-import getIntradayTimeSeriesRecursively from "@api/Services/Stock/getIntradayTimeSeriesRecursively";
-import { IStockTimeSerie } from "@api/Models/Stock/TimeSeries";
-import { Query } from "mongoose";
+import { IntradayTimeSeriesRepository } from "./index";
 import { IMetadata } from "@lib/AlphaAdvantageApi";
+import getLastWeekday from "@api/util/getLastWeekday";
 
-export default function findByMetadata(
-  metadata: Partial<IMetadata>
-): Promise<Query<IStockTimeSerie[], IStockTimeSerie, {}, IStockTimeSerie>> {
-  return getIntradayTimeSeriesRecursively(metadata);
+export default async function findByMetadata(metadata: Partial<IMetadata>) {
+  return IntradayTimeSeriesRepository.findByMetadataAndPeriod(
+    metadata,
+    getLastWeekday()
+  );
 }
