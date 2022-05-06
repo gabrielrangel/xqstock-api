@@ -10,3 +10,5 @@ export function NotFound(message: string): IHttpError {
     message,
   };
 }
+
+export default NotFound;

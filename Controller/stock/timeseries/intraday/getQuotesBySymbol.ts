@@ -18,9 +18,9 @@ export async function getQuotesBySymbol(
       ? IntradayTimeSeriesRepository.findByMetadataAndPeriod
       : IntradayTimeSeriesRepository.findByMetadata;
 
-  const timeseries = await query(metadata, endDate, startDate);
+  const Timeseries = await query(metadata, endDate ?? "", startDate);
 
-  return { metadata, timeseries };
+  return { metadata, timeseries: Timeseries };
 }
 
 export default getQuotesBySymbol;

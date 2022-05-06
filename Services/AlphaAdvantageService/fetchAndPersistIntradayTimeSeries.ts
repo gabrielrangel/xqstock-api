@@ -1,6 +1,7 @@
+import { ITimeSerie } from './../../lib/AlphaAdvantageApi/types/ITimeSerie';
 import { StockTimeSerieKindEnum } from "@api/Models/Stock/TimeSeries/types";
 import dbConnect from "@api/lib/dbConnect";
-import { QueryWithHelpers } from "mongoose";
+import { FilterQuery, QueryWithHelpers } from "mongoose";
 import dateDiffInDays from "@api/util/DateUtils/dateDiffInDays";
 import { DateUtils } from "@api/util/DateUtils";
 
@@ -13,16 +14,19 @@ import StockIntradayTimeSeriesModel, {
 } from "@api/Models/Stock/TimeSeries";
 
 export async function fetchAndPersistIntradayTimeSeries(
-  { Symbol }: Partial<IMetadataSymbolSearch>,
-  startDate: Date = null,
-  endDate: Date = new Date(Date.now())
+  { Symbol }: IMetadataSymbolSearch,
+  endDate: Date = new Date(Date.now()),
+  startDate?: Date
 ): Promise<QueryWithHelpers<IStockTimeSerie[], IStockTimeSerie>> {
   const extraObj = { Kind: StockTimeSerieKindEnum.INTRADAY, Symbol };
 
-  const outputCount = dateDiffInDays(DateUtils.getLastWeekday(), startDate);
+  const outputCount = startDate
+    ? dateDiffInDays(DateUtils.getLastWeekday(), startDate)
+    : Number.POSITIVE_INFINITY;
+
   const outputSize = outputCount < 100 ? "compact" : "full";
 
-  const TimeSeries: IStockTimeSerie[] =
+  const TimeSeries: ITimeSerie[] =
     await AlphaAdvantageApi.timeSeriesIntradayExtended(Symbol, outputSize).then(
       ({ TimeSeries: data }) =>
         Object.entries(data).map(([Date, timeSerie]) => {
@@ -38,14 +42,19 @@ export async function fetchAndPersistIntradayTimeSeries(
     )
   );
 
-  return StockIntradayTimeSeriesModel.find({
+  const filter: FilterQuery<IStockTimeSerie> = {
     Kind: "intraday",
     Symbol,
     Date: {
       $lte: new Date(endDate),
-      $gte: new Date(startDate),
     },
-  });
+  };
+
+  if (startDate) {
+    filter.Date["$gte"] = new Date(startDate);
+  }
+
+  return StockIntradayTimeSeriesModel.find(filter);
 }
 
 export default fetchAndPersistIntradayTimeSeries;
