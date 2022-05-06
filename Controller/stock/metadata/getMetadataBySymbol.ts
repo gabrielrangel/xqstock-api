@@ -11,4 +11,5 @@ export async function getMetadataBySymbol(symbol: string) {
   return { metadata };
 }
 
+
 export default getMetadataBySymbol;
