@@ -1,7 +1,6 @@
 {
   "name": "xqstock-api",
   "version": "1.0.0",
-  "main": "server.js",
   "repository": "https://github.com/gabrielrangel/xqstock-api.git",
   "author": "Gabriel Rangel <grangelda@icloud.com.br>",
   "license": "MIT",
@@ -27,6 +26,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/server.js",
-    "dev": "gulp && concurrently -n \"gulp,nodemon\" -c \"bg.Green.bold,bg.Blue.bold\" \"gulp watch\" \"nodemon -q dist/server.js\""
+    "dev": "gulp && concurrently -n \"gulp,nodemon\" -c \"bg.Green.bold,bg.Blue.bold\" \"gulp watch\" \"npm run nodemon\"",
+    "nodemon": "DOTENV_CONFIG_PATH=.env.local nodemon -r dotenv/config  dist/server.js"
   }
 }

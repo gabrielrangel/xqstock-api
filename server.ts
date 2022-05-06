@@ -1,8 +1,5 @@
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
 import getMetadataBySymbol from "./Controller/stock/metadata/getMetadataBySymbol";
-
-dotenv.config();
 
 const app: Express = express();
 const port = 3000;
