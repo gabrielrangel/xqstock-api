@@ -299,6 +299,13 @@ async-settle@^1.0.0:
   dependencies:
     async-done "^1.2.2"
 
+async@^2.5.0:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
+  dependencies:
+    lodash "^4.17.14"
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
@@ -632,7 +639,7 @@ clone-stats@^1.0.0:
   resolved "https://registry.yarnpkg.com/clone-stats/-/clone-stats-1.0.0.tgz#b3782dff8bb5474e18b9b6bf0fdfe782f8777680"
   integrity sha1-s3gt/4u1R04Yuba/D9/ngvh3doA=
 
-clone@^2.1.1:
+clone@^2.1.1, clone@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
@@ -696,6 +703,11 @@ color-support@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
   integrity sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==
+
+colors@^1.2.1:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
+  integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
 
 combined-stream@^1.0.8:
   version "1.0.8"
@@ -1086,6 +1098,11 @@ expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   integrity sha1-l+gBqgUt8CRU3kawK/YhZCzchQI=
   dependencies:
     homedir-polyfill "^1.0.1"
+
+express-async-errors@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/express-async-errors/-/express-async-errors-3.1.1.tgz#6053236d61d21ddef4892d6bd1d736889fc9da41"
+  integrity sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==
 
 express@^4.18.1:
   version "4.18.1"
@@ -1535,6 +1552,15 @@ gulp-livereload@^4.0.2:
     tiny-lr "^1.1.1"
     vinyl "^2.2.0"
 
+gulp-nodemon@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/gulp-nodemon/-/gulp-nodemon-2.5.0.tgz#83a023f1ab4094fedae9a48e60937d768f107224"
+  integrity sha512-vXfaP72xo2C6XOaXrNcLEM3QqDJ1x21S3x97U4YtzN2Rl2kH57++aFkAVxe6BafGRSTxs/xVfE/jNNlCv5Ym2Q==
+  dependencies:
+    colors "^1.2.1"
+    gulp "^4.0.0"
+    nodemon "^2.0.2"
+
 gulp-typescript-path-resolver@^0.0.1-c:
   version "0.0.1-c"
   resolved "https://registry.yarnpkg.com/gulp-typescript-path-resolver/-/gulp-typescript-path-resolver-0.0.1-c.tgz#ffc85c9bd997cbe7e4bcd6bfaca1c43cf22e95c6"
@@ -1554,7 +1580,18 @@ gulp-typescript@^6.0.0-alpha.1:
     vinyl "^2.2.0"
     vinyl-fs "^3.0.3"
 
-gulp@^4.0.2:
+gulp-yarn@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-yarn/-/gulp-yarn-3.0.0.tgz#bd040a0569215b355f0d5d0ad10d3f8fd435f598"
+  integrity sha512-zJIohDYq+wc7mr3HpVZqnHPEkQqqMZ2jvpaGpOmfAL6Tc6L6exWZMvLw9ZHZfCJhGnkkYlF7FP14LbozH7y/VA==
+  dependencies:
+    async "^2.5.0"
+    clone "^2.1.2"
+    plugin-error "^1.0.1"
+    through2 "^2.0.3"
+    which "^2.0.2"
+
+gulp@^4.0.0, gulp@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/gulp/-/gulp-4.0.2.tgz#543651070fd0f6ab0a0650c6a3e6ff5a7cb09caa"
   integrity sha512-dvEs27SCZt2ibF29xYgmnwwCYZxdxhQ/+LFWlbAW8y7jt68L/65402Lz3+CKy0Ov4rOs+NERmDq7YlZaDqUIfA==
@@ -2114,7 +2151,7 @@ lodash.assign@^4.2.0:
   resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
   integrity sha1-DZnzzNem0mHRm9rrkkUAXShYCOc=
 
-lodash@^4.17.21:
+lodash@^4.17.14, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -2350,7 +2387,7 @@ next-tick@^1.1.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
   integrity sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==
 
-nodemon@^2.0.16:
+nodemon@^2.0.16, nodemon@^2.0.2:
   version "2.0.16"
   resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-2.0.16.tgz#d71b31bfdb226c25de34afea53486c8ef225fdef"
   integrity sha512-zsrcaOfTWRuUzBn3P44RDliLlp263Z/76FPoHFr3cFFkOz0lTPAcIw8dCzfdVIx/t3AtDYCZRCDkoCojJqaG3w==
@@ -3717,6 +3754,13 @@ which@^1.2.14:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/which/-/which-1.3.1.tgz#a45043d54f5805316da8d62f9f50918d3da70b0a"
   integrity sha512-HxJdYWq1MTIQbJ3nw0cqssHoTNU267KlrDuGZ1WYlxDStUtKUhOaJmh112/TZmHxxUfuJqPXSOm7tDyas0OSIQ==
+  dependencies:
+    isexe "^2.0.0"
+
+which@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/which/-/which-2.0.2.tgz#7c6a8dd0a636a0327e10b59c9286eee93f3f51b1"
+  integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
 

@@ -4,9 +4,9 @@ import { IHttpError } from "./type";
 
 export function NotFound(message: string): IHttpError {
   return {
+    name: "Http Exception",
     status: HttpStatusEnum.NotFound,
     code: HttpStatusCodeEnum.NotFound,
-    type: "Http Exception",
     message,
   };
 }
