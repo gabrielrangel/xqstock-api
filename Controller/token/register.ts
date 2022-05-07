@@ -1,3 +1,4 @@
+import { getToken } from "@api/lib/jwt/getToken";
 import { dbConnect } from "@api/lib/dbConnect";
 import BadRequest from "@api/Error/Http/BadRequest";
 import { JwtCredentialModel } from "@api/Models/JwtCredential/index";
@@ -7,13 +8,7 @@ export async function register(email: string) {
   await dbConnect();
 
   const oldUser = await JwtCredentialModel.findOne({ email }).exec();
-  const jwtToken: string | undefined = process.env.JWT_TOKEN;
-
-  if (!jwtToken) {
-    throw new Error(
-      "Missing environment variable for JWT Authentication: JWT_TOKEN"
-    );
-  }
+  const jwtToken = getToken();
 
   if (oldUser) {
     throw BadRequest(`The given mail is already registered: ${email}`);
