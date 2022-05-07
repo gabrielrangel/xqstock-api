@@ -6,6 +6,7 @@ import getQuotesBySymbol from "@api/Controller/stock/timeseries/intraday/getQuot
 import bodyParser from "body-parser";
 import { register } from "@api/Controller/token/register";
 import jwtAuth from "@api/Middleware/jwtAuth.ts/jwtAuth";
+import cors from "cors";
 
 require("express-async-errors");
 
@@ -13,6 +14,7 @@ const app: Express = express();
 const port = 3000;
 
 app.use(bodyParser.json());
+app.use(cors());
 app.use(jwtAuth);
 
 app.get("/api", (_: Request, res: Response) => {
