@@ -1,2 +1,2 @@
-export * from "endpointsEnum";
-export * from "functionsEnum";
+export * from "./endpointsEnum";
+export * from "./functionsEnum";

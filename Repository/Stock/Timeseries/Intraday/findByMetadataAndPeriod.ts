@@ -4,11 +4,11 @@ import StockTimeSerieModel, {
   IStockTimeSerie,
 } from "@api/Models/Stock/TimeSeries";
 import { Query, FilterQuery } from "mongoose";
-import { IMetadata } from "@api/lib/AlphaAdvantageApi";
+import { IMetadata, IMetadataSymbolSearch } from "@api/lib/AlphaAdvantageApi";
 import findOldestBySymbol from "./findOldestBySymbol";
 
 export async function findByMetadataAndPeriod(
-  metadata: Partial<IMetadata>,
+  metadata: IMetadataSymbolSearch,
   endDate: string | Date,
   startDate?: string | Date
 ): Promise<Query<IStockTimeSerie[], IStockTimeSerie, {}, IStockTimeSerie>> {
@@ -37,7 +37,7 @@ export async function findByMetadataAndPeriod(
   return AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
     metadata,
     new Date(endDate),
-    new Date(startDate)
+    startDate ? new Date(startDate) : undefined
   );
 }
 

@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 import dbUriBuilder from "./dbUriBuilder";
 
-const MONGO_INITDB_URI = process.env.MONGO_INITDB_URI
+const MONGO_INITDB_URI: string = process.env.MONGO_INITDB_URI
   ? process.env.MONGO_INITDB_URI
   : dbUriBuilder();
 
@@ -10,9 +10,12 @@ const MONGO_INITDB_URI = process.env.MONGO_INITDB_URI
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
+
+//@ts-ignore
 let cached = global.mongoose;
 
 if (!cached) {
+  //@ts-ignore
   cached = global.mongoose = { conn: null, promise: null };
 }
 

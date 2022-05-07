@@ -1,2 +1,2 @@
 export * from "./symbolSearch";
-export * from "timeSeriesIntradayExtended";
+export * from "./timeSeriesIntradayExtended";

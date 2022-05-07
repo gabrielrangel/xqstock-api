@@ -3,25 +3,24 @@ import { IMetadataSymbolSearch } from "../types/IMetadata";
 import { endpointsEnum } from "../types/enum/endpointsEnum";
 import { functionsEnum } from "../types/enum/functionsEnum";
 import sendApiRequest from "../util/sendApiRequest";
+import { ISymbolSearchResponse } from "../types/IAlphaApiResponse";
 
-interface ISymbol {
-  Bestmatches: IMetadataSymbolSearch[];
-}
-
-export async function symbolSearch(keywords: string): Promise<ISymbol> {
-  let { Bestmatches } = await sendApiRequest(
+export async function symbolSearch(
+  keywords: string
+): Promise<ISymbolSearchResponse> {
+  let { Bestmatches } = (await sendApiRequest(
     {
       function: functionsEnum.symbolSearch,
       keywords,
     },
     endpointsEnum.timeSeriesIntradayDaily
-  );
+  )) as ISymbolSearchResponse;
 
   Bestmatches = Object.values(Bestmatches).map((m) =>
     normalizeAlphaAdvantageObjKeys(m)
-  );
+  ) as IMetadataSymbolSearch[];
 
-  return { Bestmatches } as ISymbol;
+  return { Bestmatches };
 }
 
 export default symbolSearch;

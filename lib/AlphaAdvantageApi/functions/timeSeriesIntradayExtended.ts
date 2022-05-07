@@ -3,6 +3,7 @@ import normalizeAlphaAdvantageObjKeys from "./../util/normalizeAlphaAdvantageObj
 import { endpointsEnum } from "../types/enum/endpointsEnum";
 import { functionsEnum } from "../types/enum/functionsEnum";
 import sendApiRequest from "../util/sendApiRequest";
+import { ITimeSeriesIntradayExtended } from "../types/IAlphaApiResponse";
 
 interface IIntradayTimeSeries {
   MetaData: IMetadataTimeSeries;
@@ -12,23 +13,24 @@ interface IIntradayTimeSeries {
 export async function timeSeriesIntradayExtended(
   symbol: string,
   outputsize: "compact" | "full" = "compact"
-): Promise<IIntradayTimeSeries> {
-  let { MetaData, TimeSeries } = await sendApiRequest(
+): Promise<ITimeSeriesIntradayExtended> {
+  let { MetaData, TimeSeries } = (await sendApiRequest(
     {
       function: functionsEnum.timeSeriesIntradayDaily,
       symbol,
       outputsize,
     },
     endpointsEnum.timeSeriesIntradayDaily
-  );
+  )) as ITimeSeriesIntradayExtended;
 
-  MetaData = normalizeAlphaAdvantageObjKeys(MetaData);
+  MetaData = normalizeAlphaAdvantageObjKeys(MetaData) as IMetadata;
 
-  Object.entries(TimeSeries).forEach(
-    ([key, value]) => (TimeSeries[key] = normalizeAlphaAdvantageObjKeys(value))
-  );
+  Object.entries(TimeSeries).forEach(([key, value]) => {
+    //@ts-ignore
+    TimeSeries[key] = normalizeAlphaAdvantageObjKeys(value);
+  });
 
-  return { MetaData, TimeSeries } as IIntradayTimeSeries;
+  return { MetaData, TimeSeries };
 }
 
 export default timeSeriesIntradayExtended;
