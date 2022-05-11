@@ -1,13 +1,11 @@
-import { dbConnect } from "@api/lib/dbConnect";
-import { StockMetaDataModel } from "@api/Models/Stock/Metadata";
-import { FilterQuery } from "mongoose";
-import { IMetadataSymbolSearch } from "@api/lib/AlphaAdvantageApi";
+import {dbConnect} from "@api/lib/dbConnect";
+import {StockMetaDataModel} from "@api/Models/Stock/Metadata";
+import {FilterQuery} from "mongoose";
+import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi";
 import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 
-export async function findOneBySymbol(symbol: string) {
-  const filter: FilterQuery<IMetadataSymbolSearch> = {
-    Symbol: { $regex: symbol, $options: "i" },
-  };
+export async function findOneBySymbol(Symbol: string): Promise<IMetadataSymbolSearch | undefined> {
+  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol};
 
   await dbConnect();
 
@@ -19,7 +17,9 @@ export async function findOneBySymbol(symbol: string) {
     return StockMetaData;
   }
 
-  return AlphaAdvantageService.fetchAndPersistMetadata(symbol);
+  await AlphaAdvantageService.fetchAndPersistMetadata(Symbol);
+
+  return StockMetaDataModel.findOne(filter).exec();
 }
 
 export default findOneBySymbol;
