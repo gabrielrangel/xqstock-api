@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import { register } from "@api/Controller/token/register";
 import jwtAuth from "@api/Middleware/jwtAuth.ts/jwtAuth";
 import cors from "cors";
+import searchMetadataByKeyword from "@api/Controller/stock/metadata/searchMetadataByKeyword";
 
 require("express-async-errors");
 
@@ -24,6 +25,12 @@ app.get("/api", (_: Request, res: Response) => {
 app.get("/api/stock/metadata/:symbol", async (req: Request, res: Response) => {
   const { symbol } = req.params;
   const data = await getMetadataBySymbol(symbol);
+  res.status(200).json({ data });
+});
+
+app.get("/api/stock/metadata/search/:keyword", async (req: Request, res: Response) => {
+  const { keyword } = req.params;
+  const data = await searchMetadataByKeyword(keyword);
   res.status(200).json({ data });
 });
 
