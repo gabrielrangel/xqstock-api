@@ -20,7 +20,7 @@ function jwtAuth(req: Request, res: Response, next?: NextFunction) {
   const jwtToken = getToken();
 
   try {
-    jwt.verify(token, jwtToken);
+    jwt.verify(token, jwtToken, {ignoreExpiration: true});
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }

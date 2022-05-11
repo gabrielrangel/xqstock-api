@@ -7,8 +7,8 @@ import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 export async function findByKeyword(keyword: string) {
   const filter: FilterQuery<IMetadataSymbolSearch> = {
     $or: [
-      {Symbol: {$regex: `^${keyword}`, $options: "i"}},
-      {Name: {$regex: `${keyword}`, $options: "i"}},
+      {Symbol: {$regex: keyword, $options: "i"}},
+      {Name: {$regex: keyword, $options: "i"}},
     ]
   };
 
