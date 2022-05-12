@@ -45,7 +45,7 @@ GET /api/stock/timeseries/intraday/:symbol
 #### Realizar registro na API
 
 ```http
-POST/token/register/
+POST /token/register/
 ```
 
 | Parâmetro | Tipo     | Descrição                                                |
