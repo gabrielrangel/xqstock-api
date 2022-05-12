@@ -23,3 +23,8 @@ services:
       - '27018:27017'
     env_file:
         - .env.local
+    volumes:
+        - mongodata:/data/db
+
+volumes:
+  mongodata:
