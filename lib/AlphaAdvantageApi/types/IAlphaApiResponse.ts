@@ -3,7 +3,7 @@ import { IMetadata } from "@api/lib/AlphaAdvantageApi";
 import { IMetadataSymbolSearch } from "./IMetadata";
 
 export interface ISymbolSearchResponse {
-  Bestmatches: IMetadataSymbolSearch[];
+  Bestmatches?: IMetadataSymbolSearch[];
 }
 
 export interface ITimeSeriesIntradayExtended {

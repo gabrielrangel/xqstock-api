@@ -1,7 +1,8 @@
 import { IAlphaApiResponse } from "./../types/IAlphaApiResponse";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import getEnv from "./getEnv";
 import normalizeAlphaAdvantageObjKeys from "./normalizeAlphaAdvantageObjKeys";
+import { AlphaAdvantageApiError } from "./AlphaAdvantageApiError";
 
 export default async function sendApiRequest(
   params: Record<string, string>,
@@ -25,7 +26,7 @@ export default async function sendApiRequest(
   const { ["Error Message"]: error } = response.data;
 
   if (error) {
-    throw new AxiosError(error, response.status.toString(), request, response);
+    throw AlphaAdvantageApiError(error);
   }
 
   return normalizeAlphaAdvantageObjKeys(response.data) as IAlphaApiResponse;

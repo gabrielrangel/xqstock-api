@@ -9,6 +9,8 @@ export const StockMetadataSchema = new Schema<Partial<IMetadataSymbolSearch>>({
   Currency: { type: String, required: true },
 });
 
+StockMetadataSchema.index({Symbol: "text", Name: "text"})
+
 export const StockMetaDataModel =
   models.StockMetadata || model("StockMetadata", StockMetadataSchema);
 
