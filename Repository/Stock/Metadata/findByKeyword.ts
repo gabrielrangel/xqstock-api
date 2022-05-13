@@ -3,14 +3,14 @@ import {StockMetaDataModel} from "@api/Models/Stock/Metadata";
 import {FilterQuery} from "mongoose";
 import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi";
 import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
+import escapeRegExp from 'lodash.escaperegexp';
+import deburr from 'lodash.deburr';
 
-export async function findByKeyword(keyword: string) {
-  const filter: FilterQuery<IMetadataSymbolSearch> = {
-    $or: [
-      {Symbol: {$regex: keyword, $options: "i"}},
-      {Name: {$regex: keyword, $options: "i"}},
-    ]
-  };
+export async function findByKeyword(rawKeyword: string) {
+  let keyword = deburr(rawKeyword);
+  keyword = escapeRegExp(keyword);
+
+  const filter: FilterQuery<IMetadataSymbolSearch> = { $text: { $search: keyword }, $orderby: {Symbol: -1} };
 
   await dbConnect();
 
@@ -19,7 +19,7 @@ export async function findByKeyword(keyword: string) {
   ).exec();
 
   if (StockMetaData.length === 0) {
-    await AlphaAdvantageService.fetchAndPersistMetadata(keyword);
+    await AlphaAdvantageService.fetchAndPersistMetadata(rawKeyword);
   }
 
   return StockMetaDataModel.find(

@@ -14,6 +14,8 @@ require("express-async-errors");
 const app: Express = express();
 const port = 3000;
 
+app.disable('etag');
+
 app.use(bodyParser.json());
 app.use(cors());
 app.use(jwtAuth);
@@ -57,12 +59,12 @@ app.post("/token/register/", async (req: Request, res: Response) => {
 
 app.use(
   (
-    { name, ...error }: IHttpError,
-    _req: Request,
+    error: IHttpError | any,
+    req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    if (name === "Http Exception") {
+    if (error?.name === "Http Exception") {
       return res.status(error.code).send({ error });
     }
 
