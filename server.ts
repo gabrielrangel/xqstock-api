@@ -59,9 +59,11 @@ app.get("/api/stock/metadata/search/:keyword", async (req: Request, res: Respons
 
 app.post(
   "/api/stock/timeseries/intraday/",
-  async (req: Request<any, any, { symbol: string | string[] }>, res: Response) => {
-    const {symbol} = req.body;
-    const data = await getQuotesBySymbolList(Array.isArray(symbol) ? symbol : [symbol]);
+  async (
+    req: Request<any, any, { symbol: string | string[], startDate: string, endDate: string }>,
+    res: Response) => {
+    const {symbol, startDate, endDate} = req.body;
+    const data = await getQuotesBySymbolList(Array.isArray(symbol) ? symbol : [symbol], startDate, endDate);
     res.status(200).json({data, symbol});
   }
 );
