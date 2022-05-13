@@ -19,7 +19,7 @@ export async function findByKeyword(rawKeyword: string) {
   ).exec();
 
   if (StockMetaData.length === 0) {
-    await AlphaAdvantageService.fetchAndPersistMetadata(rawKeyword);
+    await AlphaAdvantageService.fetchAndPersistMetadata(keyword);
   }
 
   return StockMetaDataModel.find(
