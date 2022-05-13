@@ -5,7 +5,7 @@ import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi";
 import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 
 export async function findOneBySymbol(Symbol: string): Promise<IMetadataSymbolSearch | undefined> {
-  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol};
+  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol: Symbol.toUpperCase()};
 
   await dbConnect();
 
@@ -17,7 +17,7 @@ export async function findOneBySymbol(Symbol: string): Promise<IMetadataSymbolSe
     return StockMetaData;
   }
 
-  await AlphaAdvantageService.fetchAndPersistMetadata(Symbol);
+  await AlphaAdvantageService.fetchAndPersistMetadata(filter.Symbol);
 
   return StockMetaDataModel.findOne(filter).exec();
 }

@@ -1,11 +1,12 @@
 import { NotFound } from "@api/Error/Http";
 import { MetadataRepository } from "@api/Repository/Stock/Metadata/index";
 import IntradayTimeSeriesRepository from "@api/Repository/Stock/Timeseries/Intraday";
+import {ParsedQs} from 'qs';
 
 export async function getQuotesBySymbol(
   symbol: string,
-  startDate?: string,
-  endDate?: string
+  startDate?: string | ParsedQs | undefined,
+  endDate?: string | ParsedQs | undefined
 ) {
   const metadata = await MetadataRepository.findOneBySymbol(symbol);
 
@@ -18,9 +19,9 @@ export async function getQuotesBySymbol(
       ? IntradayTimeSeriesRepository.findByMetadataAndPeriod
       : IntradayTimeSeriesRepository.findByMetadata;
 
-  const Timeseries = await query(metadata, endDate ?? "", startDate);
+  const timeseries = await query(metadata, String(endDate), String(startDate));
 
-  return { metadata, timeseries: Timeseries };
+  return { metadata, timeseries };
 }
 
 export default getQuotesBySymbol;
