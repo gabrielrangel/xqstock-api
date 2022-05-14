@@ -1,10 +1,10 @@
-import { AlphaAdvantageService } from "@api/Services/AlphaAdvantageService/index";
+import { AlphaAdvantageService } from "@api/Services/AlphaAdvantageService";
 import dbConnect from "@api/lib/dbConnect";
 import StockTimeSerieModel, {
   IStockTimeSerie,
 } from "@api/Models/Stock/TimeSeries";
 import { Query, FilterQuery } from "mongoose";
-import { IMetadata, IMetadataSymbolSearch } from "@api/lib/AlphaAdvantageApi";
+import { IMetadataSymbolSearch } from "@api/lib/AlphaAdvantageApi";
 import findOldestBySymbol from "./findOldestBySymbol";
 
 export async function findByMetadataAndPeriod(
@@ -16,7 +16,7 @@ export async function findByMetadataAndPeriod(
 
   const filter: FilterQuery<IStockTimeSerie> = {
     Kind: "intraday",
-    Symbol,
+    Symbol: Symbol.toUpperCase(),
     Date: {
       $lte: new Date(endDate),
     },
@@ -25,6 +25,8 @@ export async function findByMetadataAndPeriod(
   if (startDate) {
     filter.Date["$gte"] = new Date(startDate);
   }
+
+  console.log(filter)
 
   await dbConnect();
 

@@ -4,8 +4,8 @@ import {FilterQuery} from "mongoose";
 import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi";
 import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 
-export async function findOneBySymbol(Symbol: string): Promise<IMetadataSymbolSearch | undefined> {
-  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol};
+export async function findOneBySymbol(symbol: string): Promise<IMetadataSymbolSearch | undefined> {
+  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol: symbol.toUpperCase()};
 
   await dbConnect();
 
@@ -17,7 +17,7 @@ export async function findOneBySymbol(Symbol: string): Promise<IMetadataSymbolSe
     return StockMetaData;
   }
 
-  await AlphaAdvantageService.fetchAndPersistMetadata(Symbol);
+  await AlphaAdvantageService.fetchAndPersistMetadata(filter.Symbol);
 
   return StockMetaDataModel.findOne(filter).exec();
 }
