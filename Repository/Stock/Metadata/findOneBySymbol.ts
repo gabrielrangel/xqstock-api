@@ -4,8 +4,8 @@ import {FilterQuery} from "mongoose";
 import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi";
 import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
 
-export async function findOneBySymbol(Symbol: string): Promise<IMetadataSymbolSearch | undefined> {
-  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol: Symbol.toUpperCase()};
+export async function findOneBySymbol(symbol: string): Promise<IMetadataSymbolSearch | undefined> {
+  const filter: FilterQuery<IMetadataSymbolSearch> = {Symbol: symbol.toUpperCase()};
 
   await dbConnect();
 

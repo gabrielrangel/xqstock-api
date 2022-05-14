@@ -26,6 +26,8 @@ export async function findByMetadataAndPeriod(
     filter.Date["$gte"] = new Date(startDate);
   }
 
+  console.log(filter)
+
   await dbConnect();
 
   const oldest = await findOldestBySymbol(Symbol);

@@ -8,7 +8,10 @@ export async function getQuotesBySymbol(
   startDate?: string | ParsedQs | undefined,
   endDate?: string | ParsedQs | undefined
 ) {
+  console.log(symbol)
   const metadata = await MetadataRepository.findOneBySymbol(symbol);
+  // http://localhost:3000/api/stock/timeseries/intraday/
+  //        localhost:3000/api/stock/timeseries/intraday/
 
   if (!metadata) {
     throw NotFound(`Cannot find Stock with symbol: ${symbol}`);

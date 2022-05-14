@@ -3,7 +3,6 @@ import {IHttpError} from "@api/Error/Http/type";
 import express, {Express, NextFunction, Request, Response} from "express";
 import getMetadataBySymbol from "@api/Controller/stock/metadata/getMetadataBySymbol";
 import getQuotesBySymbol from "@api/Controller/stock/timeseries/intraday/getQuotesBySymbol";
-import bodyParser from "body-parser";
 import {register} from "@api/Controller/token/register";
 import jwtAuth from "@api/Middleware/jwtAuth.ts/jwtAuth";
 import cors from "cors";
@@ -16,8 +15,9 @@ const app: Express = express();
 const port = 3000;
 
 // Middleware
+
 app.disable('etag');
-app.use(bodyParser.json());
+app.use(express.json({type: 'application/json'}));
 app.use(cors());
 app.use(jwtAuth);
 
@@ -58,11 +58,15 @@ app.get("/api/stock/metadata/search/:keyword", async (req: Request, res: Respons
 // Stock Timeseries
 
 app.post(
-  "/api/stock/timeseries/intraday/",
+  "/api/stock/timeseries/intraday",
   async (
-    req: Request<any, any, { symbol: string | string[], startDate: string, endDate: string }>,
+    req: Request,
     res: Response) => {
     const {symbol, startDate, endDate} = req.body;
+
+    if (!symbol) {
+      throw BadRequest('Missing stock symbol');
+    }
     const data = await getQuotesBySymbolList(Array.isArray(symbol) ? symbol : [symbol], startDate, endDate);
     res.status(200).json({data, symbol});
   }
