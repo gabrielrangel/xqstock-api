@@ -25,7 +25,7 @@ export default async function sendApiRequest(
     const errorMsg = res.data["Error Message"] ?? res.data["Note"];
 
     if (errorMsg) {
-      const error = AlphaAdvantageApiError(errorMsg);
+      const error = AlphaAdvantageApiError(errorMsg, params.function);
       console.error(error);
       throw error;
     }
