@@ -12,7 +12,7 @@ gulp.task("build:app", () => {
   return project
     .src()
     .pipe(project())
-    .js.pipe(pathResolver.tsPathResolver(project.config.compilerOptions))
+    .js.pipe(pathResolver.tsPathResolver(project.config.compilerOptions, {}))
     .pipe(gulp.dest("dist"));
 });
 

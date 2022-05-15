@@ -1,10 +1,10 @@
 import { ITimeSerie } from "@api/lib/AlphaAdvantageApi";
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Model } from "mongoose";
 import { StockTimeSerieKindEnum } from "./types";
 
 export * from "./types";
 
-export interface IStockTimeSerie extends Partial<ITimeSerie> {
+export interface IStockTimeSerie extends ITimeSerie {
   Symbol: string;
   Date: Date;
   Kind: string;
@@ -27,7 +27,7 @@ export const StockTimeSerieSchema = new Schema<IStockTimeSerie>({
 
 StockTimeSerieSchema.index({ Symbol: 1, Date: 1, Kind: 1 }, { unique: true });
 
-export const StockTimeSerieModel =
+export const StockTimeSerieModel:  Model<IStockTimeSerie> =
   models.StockTimeSerie || model("StockTimeSerie", StockTimeSerieSchema);
 
 export default StockTimeSerieModel;

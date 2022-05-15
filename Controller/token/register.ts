@@ -1,7 +1,9 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { getToken } from "@api/lib/jwt/getToken";
 import { dbConnect } from "@api/lib/dbConnect";
 import BadRequest from "@api/Error/Http/BadRequest";
-import { JwtCredentialModel } from "@api/Models/JwtCredential/index";
+import { JwtCredentialModel } from "@api/Models/JwtCredential";
 import jwt from "jsonwebtoken";
 
 export async function register(email: string) {
@@ -18,9 +20,7 @@ export async function register(email: string) {
     email: email.toLowerCase(),
   });
 
-  const token = jwt.sign({ credential_id: credential._id, email }, jwtToken);
-
-  credential.token = token;
+  credential.token = jwt.sign({ credential_id: credential._id, email }, jwtToken);
 
   return credential;
 }

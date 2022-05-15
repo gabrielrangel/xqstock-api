@@ -1,7 +1,6 @@
 export function normalizeAlphaAdvantageObjKeys(
   obj: Record<string, any>
 ): unknown {
-  console.log(obj)
   return Object.entries(obj).reduce((acc, [rawKey, value]) => {
     const key = rawKey.split(/\d+\.|\s|\W.+\W/g).reduce((a, str) => {
       const lowerStr = str.toLowerCase();

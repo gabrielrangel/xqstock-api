@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { IHttpError } from "./type";
 import HttpStatusEnum from "./Enum/HttpStatus";
 import HttpStatusCodeEnum from "./Enum/HttpStatusCode";

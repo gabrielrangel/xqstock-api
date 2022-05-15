@@ -14,7 +14,7 @@ export async function findByKeyword(rawKeyword: string) {
 
   await dbConnect();
 
-  const StockMetaData: IMetadataSymbolSearch[] = await StockMetaDataModel.find(
+  const StockMetaData = await StockMetaDataModel.find(
     filter
   ).exec();
 
