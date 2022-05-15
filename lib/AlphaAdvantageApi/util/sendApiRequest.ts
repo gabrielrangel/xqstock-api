@@ -21,13 +21,15 @@ export default async function sendApiRequest(
     method: "GET",
   };
 
-  const response = await axios(request);
+  return axios(request).then((res) => {
+    const errorMsg = res.data["Error Message"] ?? res.data["Note"];
 
-  const { ["Error Message"]: error } = response.data;
+    if (errorMsg) {
+      const error = AlphaAdvantageApiError(errorMsg);
+      console.error(error);
+      throw error;
+    }
 
-  if (error) {
-    throw AlphaAdvantageApiError(error);
-  }
-
-  return normalizeAlphaAdvantageObjKeys(response.data) as IAlphaApiResponse;
+    return res.data as IAlphaApiResponse;
+  });
 }
