@@ -1,14 +1,9 @@
-import { IMetadata, IMetadataTimeSeries, ITimeSerie } from "./../types";
+import { IMetadata } from "./../types";
 import normalizeAlphaAdvantageObjKeys from "./../util/normalizeAlphaAdvantageObjKeys";
 import { endpointsEnum } from "../types/enum/endpointsEnum";
 import { functionsEnum } from "../types/enum/functionsEnum";
 import sendApiRequest from "../util/sendApiRequest";
 import { ITimeSeriesIntradayExtended } from "../types/IAlphaApiResponse";
-
-interface IIntradayTimeSeries {
-  MetaData: IMetadataTimeSeries;
-  TimeSeries: ITimeSerie;
-}
 
 export async function timeSeriesIntradayExtended(
   symbol: string,

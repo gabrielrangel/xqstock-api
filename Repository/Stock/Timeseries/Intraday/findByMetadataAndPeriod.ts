@@ -1,18 +1,18 @@
-import { AlphaAdvantageService } from "@api/Services/AlphaAdvantageService";
+import {AlphaAdvantageService} from "@api/Services/AlphaAdvantageService";
 import dbConnect from "@api/lib/dbConnect";
 import StockTimeSerieModel, {
   IStockTimeSerie,
 } from "@api/Models/Stock/TimeSeries";
-import { Query, FilterQuery } from "mongoose";
-import { IMetadataSymbolSearch } from "@api/lib/AlphaAdvantageApi";
-import findOldestBySymbol from "./findOldestBySymbol";
+import {Query, FilterQuery} from "mongoose";
+import {IStockMetaDataModel} from "@api/Models/Stock/Metadata";
+import differenceInBusinessDays from 'date-fns/differenceInBusinessDays'
 
 export async function findByMetadataAndPeriod(
-  metadata: IMetadataSymbolSearch,
+  metadata: IStockMetaDataModel,
   endDate: string | Date,
   startDate?: string | Date
 ): Promise<Query<IStockTimeSerie[], IStockTimeSerie, {}, IStockTimeSerie>> {
-  const { Symbol } = metadata;
+  const {Symbol} = metadata;
 
   const filter: FilterQuery<IStockTimeSerie> = {
     Kind: "intraday",
@@ -26,21 +26,23 @@ export async function findByMetadataAndPeriod(
     filter.Date["$gte"] = new Date(startDate);
   }
 
-  console.log(filter)
-
   await dbConnect();
 
-  const oldest = await findOldestBySymbol(Symbol);
+  const timeSeries = await StockTimeSerieModel.find(filter).exec();
 
-  if (oldest?.Date < new Date(endDate)) {
-    return StockTimeSerieModel.find(filter);
+  const curAndPevDatesList = timeSeries.map((ts, i, list) => ([ts.Date, list[--i]?.Date]))
+  const dateDiff = curAndPevDatesList.map(([cur, prev]) => differenceInBusinessDays(  cur, prev ?? cur))
+  const maxDateDiff = Math.max(...dateDiff);
+
+  if (maxDateDiff > 1 || timeSeries.length === 0) {
+    await AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
+      metadata,
+      new Date(endDate),
+      startDate ? new Date(startDate) : undefined
+    )
   }
 
-  return AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
-    metadata,
-    new Date(endDate),
-    startDate ? new Date(startDate) : undefined
-  );
+  return StockTimeSerieModel.find(filter).exec();
 }
 
 export default findByMetadataAndPeriod;

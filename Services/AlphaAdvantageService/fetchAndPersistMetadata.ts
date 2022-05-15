@@ -1,10 +1,7 @@
 import dbConnect from "@api/lib/dbConnect";
 import StockMetaDataModel from "@api/Models/Stock/Metadata";
 
-import AlphaAdvantageApi, {
-  IMetadataSymbolSearch,
-} from "@api/lib/AlphaAdvantageApi";
-import {MongooseError} from "mongoose";
+import AlphaAdvantageApi from "@api/lib/AlphaAdvantageApi";
 import {AlphaAdvantageApiErrorType} from "@api/lib/AlphaAdvantageApi/util/AlphaAdvantageApiError";
 
 export async function fetchAndPersistMetadata(
@@ -23,9 +20,7 @@ export async function fetchAndPersistMetadata(
   if (Bestmatches) {
     await dbConnect().then(() =>
       Promise.all(Bestmatches.map(match =>
-          StockMetaDataModel.create(match).catch(_e =>
-            console.error(`StockMetadata with symbol ${match.Symbol} already exists`)
-          )
+          StockMetaDataModel.findOneAndUpdate({Symbol: match.Symbol}, match, {upsert: true, setDefaultsOnInsert: true})
         )
       )
     )
