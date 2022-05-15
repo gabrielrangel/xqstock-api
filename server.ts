@@ -9,6 +9,8 @@ import cors from "cors";
 import searchMetadataByKeyword from "@api/Controller/stock/metadata/searchMetadataByKeyword";
 import getQuotesBySymbolList from "@api/Controller/stock/timeseries/intraday/getQuotesBySymbolList";
 import newSession from "@api/Controller/session/new";
+import getSession from "@api/Controller/session/get";
+import NotFound from "@api/Error/Http/NotFound";
 
 require("express-async-errors");
 
@@ -46,6 +48,17 @@ app.post("/token/register/", async (req: Request, res: Response) => {
 
 app.post("/api/session/new", async (req: Request, res: Response) => {
   const session = await newSession();
+
+  res.status(200).send({ session });
+});
+
+app.get("/api/session/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const session = await getSession(id ?? "");
+
+  if (session === null) {
+    throw NotFound(`Not found session with id ${id}`);
+  }
 
   res.status(200).send({ session });
 });
