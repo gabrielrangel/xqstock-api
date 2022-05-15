@@ -1,15 +1,15 @@
 import dbConnect from "@api/lib/dbConnect";
 import SessionRepository from "@api/Repository/Session";
 
-export async function updateHistory(sessionId: string, symbol: string) {
+export async function addBookmark(sessionId: string, symbol: string) {
   await dbConnect();
 
   const session = await SessionRepository.findOneById(sessionId);
 
   if (session) {
-    session.SymbolHistory.push(symbol);
-    session.SymbolHistory = session.SymbolHistory.sort();
-    session.SymbolHistory = session.SymbolHistory.filter(
+    session.SymbolBookmarks.push(symbol);
+    session.SymbolBookmarks = session.SymbolBookmarks.sort();
+    session.SymbolBookmarks = session.SymbolBookmarks.filter(
       (item, pos, ary) => !pos || item != ary[pos - 1]
     );
 
@@ -17,4 +17,4 @@ export async function updateHistory(sessionId: string, symbol: string) {
   }
 }
 
-export default updateHistory;
+export default addBookmark;
