@@ -1,14 +1,14 @@
-import {normalizeAlphaAdvantageObjKeys} from "@api/lib/AlphaAdvantageApi/util/normalizeAlphaAdvantageObjKeys";
-import {IMetadataSymbolSearch} from "../types/IMetadata";
-import {endpointsEnum} from "../types/enum/endpointsEnum";
-import {functionsEnum} from "../types/enum/functionsEnum";
+import { normalizeAlphaAdvantageObjKeys } from "@api/lib/AlphaAdvantageApi/util/normalizeAlphaAdvantageObjKeys";
+import { IMetadataSymbolSearch } from "../types/IMetadata";
+import { endpointsEnum } from "../types/enum/endpointsEnum";
+import { functionsEnum } from "../types/enum/functionsEnum";
 import sendApiRequest from "../util/sendApiRequest";
-import {ISymbolSearchResponse} from "../types/IAlphaApiResponse";
+import { ISymbolSearchResponse } from "../types/IAlphaApiResponse";
 
 export async function symbolSearch(
   keywords: string
 ): Promise<ISymbolSearchResponse> {
-  let {Bestmatches} = (await sendApiRequest(
+  let { Bestmatches } = (await sendApiRequest(
     {
       function: functionsEnum.symbolSearch,
       keywords,
@@ -22,7 +22,7 @@ export async function symbolSearch(
     ) as IMetadataSymbolSearch[];
   }
 
-  return {Bestmatches};
+  return { Bestmatches };
 }
 
 export default symbolSearch;

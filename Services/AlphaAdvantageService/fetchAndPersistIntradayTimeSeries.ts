@@ -1,60 +1,51 @@
-import { ITimeSerie } from './../../lib/AlphaAdvantageApi/types/ITimeSerie';
+import { AlphaAdvantageApi } from "@api/lib/AlphaAdvantageApi";
 import { StockTimeSerieKindEnum } from "@api/Models/Stock/TimeSeries/types";
 import dbConnect from "@api/lib/dbConnect";
-import { FilterQuery, QueryWithHelpers } from "mongoose";
-import dateDiffInDays from "@api/util/DateUtils/dateDiffInDays";
-import { DateUtils } from "@api/util/DateUtils";
-
-import AlphaAdvantageApi, {
-  IMetadataSymbolSearch,
-} from "@api/lib/AlphaAdvantageApi";
 
 import StockIntradayTimeSeriesModel, {
-  IStockTimeSerie,
+  StockTimeSerieSchemaType,
 } from "@api/Models/Stock/TimeSeries";
+import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
+import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
 
 export async function fetchAndPersistIntradayTimeSeries(
-  { Symbol }: IMetadataSymbolSearch,
+  { Symbol }: TStockMetadataModel,
   endDate: Date = new Date(Date.now()),
   startDate?: Date
-): Promise<QueryWithHelpers<IStockTimeSerie[], IStockTimeSerie>> {
+) {
   const extraObj = { Kind: StockTimeSerieKindEnum.INTRADAY, Symbol };
-
-  const outputCount = startDate
-    ? dateDiffInDays(DateUtils.getLastWeekday(), startDate)
-    : Number.POSITIVE_INFINITY;
-
+  const outputCount = differenceInBusinessDays(
+    endDate,
+    startDate ?? new Date(0)
+  );
   const outputSize = outputCount < 100 ? "compact" : "full";
 
-  const TimeSeries: ITimeSerie[] =
-    await AlphaAdvantageApi.timeSeriesIntradayExtended(Symbol, outputSize).then(
-      ({ TimeSeries: data }) =>
-        Object.entries(data).map(([Date, timeSerie]) => {
-          return Object.assign(timeSerie, { ...extraObj, Date });
-        })
-    );
+  const TimeSeries = await AlphaAdvantageApi.timeSeriesIntradayExtended(
+    Symbol,
+    outputSize
+  ).then(({ TimeSeries: data }) =>
+    Object.entries(data).map(([Date, timeSerie]) => {
+      return Object.assign(timeSerie, {
+        ...extraObj,
+        Date,
+      }) as unknown as StockTimeSerieSchemaType;
+    })
+  );
 
   await dbConnect();
 
-  await Promise.all(
+  Promise.all(
     TimeSeries.map((timeserie) =>
-      StockIntradayTimeSeriesModel.create(timeserie)
+      StockIntradayTimeSeriesModel.findOneAndUpdate(
+        { ...extraObj, Date: timeserie.Date },
+        timeserie,
+        {
+          upsert: true,
+          setDefaultsOnInsert: true,
+        }
+      ).exec()
     )
   );
-
-  const filter: FilterQuery<IStockTimeSerie> = {
-    Kind: "intraday",
-    Symbol,
-    Date: {
-      $lte: new Date(endDate),
-    },
-  };
-
-  if (startDate) {
-    filter.Date["$gte"] = new Date(startDate);
-  }
-
-  return StockIntradayTimeSeriesModel.find(filter);
 }
 
 export default fetchAndPersistIntradayTimeSeries;

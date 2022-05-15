@@ -2,7 +2,7 @@ export function dbUriBuilder(): string {
   const template =
     "mongodb://%MONGO_INITDB_ROOT_USERNAME%:%MONGO_INITDB_ROOT_PASSWORD%@%MONGO_INITDB_HOST%:%MONGO_INITDB_PORT%";
 
-  const envList = template.match(/(?<=%{1})[\w_]+(?=%{1})/g);
+  const envList = template.match(/(?<=%)[\w_]+(?=%)/g);
 
   if (!envList) {
     throw new Error("Missing environment variables");

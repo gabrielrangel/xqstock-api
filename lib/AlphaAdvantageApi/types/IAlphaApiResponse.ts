@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { ITimeSerie } from "@api/lib/AlphaAdvantageApi";
 import { IMetadata } from "@api/lib/AlphaAdvantageApi";
 import { IMetadataSymbolSearch } from "./IMetadata";
@@ -8,7 +10,7 @@ export interface ISymbolSearchResponse {
 
 export interface ITimeSeriesIntradayExtended {
   MetaData: IMetadata;
-  TimeSeries: ITimeSerie[];
+  TimeSeries: Record<string, ITimeSerie>;
 }
 
 export type IAlphaApiResponse =

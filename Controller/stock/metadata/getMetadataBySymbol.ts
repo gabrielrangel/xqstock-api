@@ -1,8 +1,8 @@
 import { NotFound } from "@api/Error/Http";
-import { MetadataRepository } from "@api/Repository/Stock/Metadata/index";
+import { MetadataRepository } from "../../../Repository/Stock/Metadata";
 
 export async function getMetadataBySymbol(symbol: string) {
-  const metadata = await MetadataRepository.findOneBySymbol(symbol.toUpperCase());
+  const metadata = await MetadataRepository.findOneBySymbol(symbol);
 
   if (!metadata) {
     throw NotFound(`Cannot find Stock with symbol: ${symbol}`);
@@ -10,6 +10,5 @@ export async function getMetadataBySymbol(symbol: string) {
 
   return { metadata };
 }
-
 
 export default getMetadataBySymbol;
