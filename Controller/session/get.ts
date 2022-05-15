@@ -1,16 +1,7 @@
-import dbConnect from "@api/lib/dbConnect";
-import SessionModel from "@api/Models/Session";
+import findOneById from "@api/Repository/Session/findOneById";
 
 export async function getSession(id: string) {
-  await dbConnect();
-
-  return SessionModel.findOne({ _id: id })
-    .exec()
-    .catch((e) => {
-      if (e.kind === "ObjectId") {
-        return null;
-      }
-    });
+  return findOneById(id);
 }
 
 export default getSession;
