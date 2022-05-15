@@ -8,6 +8,8 @@ import StockIntradayTimeSeriesModel, {
 import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
 import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
 
+const { ALPHA_API_RETRY_TIMEOUT } = process.env;
+
 export async function fetchAndPersistIntradayTimeSeries(
   { Symbol }: TStockMetadataModel,
   endDate: Date = new Date(Date.now()),
@@ -20,17 +22,31 @@ export async function fetchAndPersistIntradayTimeSeries(
   );
   const outputSize = outputCount < 100 ? "compact" : "full";
 
-  const TimeSeries = await AlphaAdvantageApi.timeSeriesIntradayExtended(
-    Symbol,
-    outputSize
-  ).then(({ TimeSeries: data }) =>
-    Object.entries(data).map(([Date, timeSerie]) => {
-      return Object.assign(timeSerie, {
-        ...extraObj,
-        Date,
-      }) as unknown as StockTimeSerieSchemaType;
-    })
-  );
+  let TimeSeries: StockTimeSerieSchemaType[] | undefined;
+
+  let timeOut = false;
+  setTimeout(() => (timeOut = true), Number(ALPHA_API_RETRY_TIMEOUT ?? 0));
+
+  while (!TimeSeries && !timeOut) {
+    TimeSeries = await AlphaAdvantageApi.timeSeriesIntradayExtended(
+      Symbol,
+      outputSize
+    )
+      .then(({ TimeSeries: data }) =>
+        Object.entries(data).map(
+          ([Date, timeSerie]) =>
+            Object.assign(timeSerie, {
+              ...extraObj,
+              Date,
+            }) as unknown as StockTimeSerieSchemaType
+        )
+      )
+      .catch(() => undefined);
+  }
+
+  if (!TimeSeries) {
+    return;
+  }
 
   await dbConnect();
 

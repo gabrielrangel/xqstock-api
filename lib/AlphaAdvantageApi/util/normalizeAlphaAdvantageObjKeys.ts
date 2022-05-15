@@ -13,7 +13,6 @@ export function normalizeAlphaAdvantageObjKeys(
       return Object.assign(acc, { [key]: value });
     }, {});
   } catch {
-    console.log("aqui");
     result = obj;
   }
 

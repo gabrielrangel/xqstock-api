@@ -2,19 +2,24 @@ import dbConnect from "@api/lib/dbConnect";
 import StockMetaDataModel from "@api/Models/Stock/Metadata";
 
 import AlphaAdvantageApi from "@api/lib/AlphaAdvantageApi";
-import { AlphaAdvantageApiErrorType } from "@api/lib/AlphaAdvantageApi/util/AlphaAdvantageApiError";
+
+const { ALPHA_API_RETRY_TIMEOUT } = process.env;
 
 export async function fetchAndPersistMetadata(Symbol: string) {
-  const Bestmatches = await AlphaAdvantageApi.symbolSearch(Symbol)
-    .catch((e) => {
-      if (e?.type === AlphaAdvantageApiErrorType) {
-        console.error(e?.message);
-        return { Bestmatches: [] };
-      }
+  let Bestmatches;
 
-      throw e;
-    })
-    .then(({ Bestmatches }) => Bestmatches ?? []);
+  let timeOut = false;
+  setTimeout(() => (timeOut = true), Number(ALPHA_API_RETRY_TIMEOUT ?? 0));
+
+  while (!Bestmatches && !timeOut) {
+    Bestmatches = await AlphaAdvantageApi.symbolSearch(Symbol)
+      .then(({ Bestmatches }) => Bestmatches ?? [])
+      .catch(() => undefined);
+  }
+
+  if (!Bestmatches) {
+    return;
+  }
 
   await dbConnect();
 
