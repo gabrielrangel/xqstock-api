@@ -40,15 +40,16 @@ export async function findByMetadataAndPeriod(
   );
   const maxDateDiff = Math.max(...dateDiff);
 
-  if (maxDateDiff > 1 || timeSeries.length === 0) {
-    return AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
-      metadata,
-      new Date(endDate),
-      startDate ? new Date(startDate) : undefined
-    );
+  if (maxDateDiff < 1 && timeSeries.length > 0) {
+    return timeSeries;
   }
+  await AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
+    metadata,
+    new Date(endDate),
+    startDate ? new Date(startDate) : undefined
+  );
 
-  return timeSeries;
+  return StockTimeSerieModel.find(filter).exec();
 }
 
 export default findByMetadataAndPeriod;

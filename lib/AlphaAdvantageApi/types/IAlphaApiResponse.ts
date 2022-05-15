@@ -10,7 +10,7 @@ export interface ISymbolSearchResponse {
 
 export interface ITimeSeriesIntradayExtended {
   MetaData: IMetadata;
-  TimeSeries: ITimeSerie[];
+  TimeSeries: Record<string, ITimeSerie>;
 }
 
 export type IAlphaApiResponse =

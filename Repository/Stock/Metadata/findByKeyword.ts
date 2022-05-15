@@ -24,9 +24,11 @@ export async function findByKeyword(
 
   const StockMetaData = await StockMetaDataModel.find(filter).exec();
 
-  if (StockMetaData.length === 0) {
-    return AlphaAdvantageService.fetchAndPersistMetadata(keyword);
+  if (StockMetaData.length > 0) {
+    return StockMetaData;
   }
+
+  await AlphaAdvantageService.fetchAndPersistMetadata(keyword);
 
   return StockMetaDataModel.find(filter).exec();
 }

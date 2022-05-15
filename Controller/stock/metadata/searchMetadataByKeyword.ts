@@ -6,5 +6,4 @@ export async function searchMetadataByKeyword(keyword: string) {
   return { metadata };
 }
 
-
 export default searchMetadataByKeyword;

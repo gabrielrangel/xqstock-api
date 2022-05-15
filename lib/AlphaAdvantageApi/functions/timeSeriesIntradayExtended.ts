@@ -1,4 +1,4 @@
-import { IMetadata } from "./../types";
+import { IMetadata, ITimeSerie } from "./../types";
 import normalizeAlphaAdvantageObjKeys from "./../util/normalizeAlphaAdvantageObjKeys";
 import { endpointsEnum } from "../types/enum/endpointsEnum";
 import { functionsEnum } from "../types/enum/functionsEnum";
@@ -21,8 +21,7 @@ export async function timeSeriesIntradayExtended(
   MetaData = normalizeAlphaAdvantageObjKeys(MetaData) as IMetadata;
 
   Object.entries(TimeSeries).forEach(([key, value]) => {
-    //@ts-ignore
-    TimeSeries[key] = normalizeAlphaAdvantageObjKeys(value);
+    TimeSeries[key] = normalizeAlphaAdvantageObjKeys(value) as ITimeSerie;
   });
 
   return { MetaData, TimeSeries };

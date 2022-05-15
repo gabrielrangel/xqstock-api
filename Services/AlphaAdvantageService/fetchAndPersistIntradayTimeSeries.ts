@@ -4,7 +4,6 @@ import dbConnect from "@api/lib/dbConnect";
 
 import StockIntradayTimeSeriesModel, {
   StockTimeSerieSchemaType,
-  TStockTimeSeriesModel,
 } from "@api/Models/Stock/TimeSeries";
 import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
 import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
@@ -13,7 +12,7 @@ export async function fetchAndPersistIntradayTimeSeries(
   { Symbol }: TStockMetadataModel,
   endDate: Date = new Date(Date.now()),
   startDate?: Date
-): Promise<(TStockTimeSeriesModel | null)[]> {
+) {
   const extraObj = { Kind: StockTimeSerieKindEnum.INTRADAY, Symbol };
   const outputCount = differenceInBusinessDays(
     endDate,
@@ -35,7 +34,7 @@ export async function fetchAndPersistIntradayTimeSeries(
 
   await dbConnect();
 
-  return Promise.all(
+  Promise.all(
     TimeSeries.map((timeserie) =>
       StockIntradayTimeSeriesModel.findOneAndUpdate(
         { ...extraObj, Date: timeserie.Date },
