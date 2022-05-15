@@ -3,12 +3,6 @@ export interface IMetadata {
   TimeZone: string;
 }
 
-export interface IMetadataTimeSeries extends IMetadata {
-  Information: string;
-  LastRefreshed: string;
-  OutputSize: string;
-}
-
 export interface IMetadataSymbolSearch extends IMetadata {
   Name: string;
   Type: string;

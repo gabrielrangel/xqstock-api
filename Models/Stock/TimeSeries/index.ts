@@ -1,23 +1,23 @@
-import { ITimeSerie } from "@api/lib/AlphaAdvantageApi";
-import { Schema, model, models, Model } from "mongoose";
-import { StockTimeSerieKindEnum } from "./types";
+import {ITimeSerie} from "@api/lib/AlphaAdvantageApi";
+import {Schema, model, models, Model, Document, Types} from "mongoose";
+import {StockTimeSerieKindEnum} from "./types";
 
 export * from "./types";
 
-export interface IStockTimeSerie extends ITimeSerie {
+export type StockTimeSerieSchemaType = ITimeSerie & {
   Symbol: string;
   Date: Date;
   Kind: string;
 }
 
-export const StockTimeSerieSchema = new Schema<IStockTimeSerie>({
-  Symbol: { type: String, required: true },
-  Date: { type: Date, required: true },
-  Open: { type: String, required: true },
-  High: { type: String, required: true },
-  Low: { type: String, required: true },
-  Close: { type: String, required: true },
-  Volume: { type: String, required: true },
+export const StockTimeSerieSchema = new Schema<StockTimeSerieSchemaType>({
+  Symbol: {type: String, required: true},
+  Date: {type: Date, required: true},
+  Open: {type: String, required: true},
+  High: {type: String, required: true},
+  Low: {type: String, required: true},
+  Close: {type: String, required: true},
+  Volume: {type: String, required: true},
   Kind: {
     type: String,
     enum: Object.values(StockTimeSerieKindEnum),
@@ -25,9 +25,11 @@ export const StockTimeSerieSchema = new Schema<IStockTimeSerie>({
   },
 });
 
-StockTimeSerieSchema.index({ Symbol: 1, Date: 1, Kind: 1 }, { unique: true });
+StockTimeSerieSchema.index({Symbol: 1, Date: 1, Kind: 1}, {unique: true});
 
-export const StockTimeSerieModel:  Model<IStockTimeSerie> =
+export type TStockTimeSeriesModel = Document<unknown, any, StockTimeSerieSchemaType> & ITimeSerie & { Symbol: string; Date: Date; Kind: string; } & { _id: Types.ObjectId; }
+
+export const StockTimeSerieModel: Model<StockTimeSerieSchemaType> =
   models.StockTimeSerie || model("StockTimeSerie", StockTimeSerieSchema);
 
 export default StockTimeSerieModel;

@@ -1,30 +1,34 @@
-import {dbConnect} from "@api/lib/dbConnect";
-import {StockMetaDataModel} from "@api/Models/Stock/Metadata";
-import {FilterQuery} from "mongoose";
-import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi";
+import { dbConnect } from "@api/lib/dbConnect";
+import {
+  StockMetaDataModel,
+  TStockMetadataModel,
+} from "@api/Models/Stock/Metadata";
+import { FilterQuery } from "mongoose";
 import AlphaAdvantageService from "@api/Services/AlphaAdvantageService";
-import escapeRegExp from 'lodash.escaperegexp';
-import deburr from 'lodash.deburr';
+import escapeRegExp from "lodash.escaperegexp";
+import deburr from "lodash.deburr";
+import { StockTimeSerieSchemaType } from "@api/Models/Stock/TimeSeries";
 
-export async function findByKeyword(rawKeyword: string) {
+export async function findByKeyword(
+  rawKeyword: string
+): Promise<(TStockMetadataModel | null)[]> {
   let keyword = deburr(rawKeyword);
   keyword = escapeRegExp(keyword);
 
-  const filter: FilterQuery<IMetadataSymbolSearch> = { $text: { $search: keyword }, $orderby: {Symbol: -1} };
+  const filter: FilterQuery<StockTimeSerieSchemaType> = {
+    $text: { $search: keyword },
+    $orderby: { Symbol: -1 },
+  };
 
   await dbConnect();
 
-  const StockMetaData = await StockMetaDataModel.find(
-    filter
-  ).exec();
+  const StockMetaData = await StockMetaDataModel.find(filter).exec();
 
   if (StockMetaData.length === 0) {
-    await AlphaAdvantageService.fetchAndPersistMetadata(keyword);
+    return AlphaAdvantageService.fetchAndPersistMetadata(keyword);
   }
 
-  return StockMetaDataModel.find(
-    filter
-  ).exec();
+  return StockMetaDataModel.find(filter).exec();
 }
 
 export default findByKeyword;

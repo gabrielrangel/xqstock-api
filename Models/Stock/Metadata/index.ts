@@ -1,7 +1,7 @@
 import {IMetadataSymbolSearch} from "@api/lib/AlphaAdvantageApi/types/IMetadata";
-import {Schema, models, model, Model, Document, Types} from "mongoose";
+import {Document, Model, model, models, Schema, Types} from "mongoose";
 
-type StockMetadataSchemaType = Omit<IMetadataSymbolSearch, "TimeZone" | "Marketopen" | "Marketclose" | "Matchscore">;
+export type StockMetadataSchemaType = Omit<IMetadataSymbolSearch, "TimeZone" | "Marketopen" | "Marketclose" | "Matchscore">;
 
 export const StockMetadataSchema = new Schema<StockMetadataSchemaType>({
   Symbol: {type: String, required: true, unique: true},
@@ -13,8 +13,8 @@ export const StockMetadataSchema = new Schema<StockMetadataSchemaType>({
 
 StockMetadataSchema.index({Symbol: "text", Name: "text"})
 
-export type IStockMetaDataModel =
-  Document<unknown, any, StockMetadataSchemaType> & StockMetadataSchemaType & {_id: Types.ObjectId}
+export type TStockMetadataModel =
+  Document<unknown, any, StockMetadataSchemaType> & StockMetadataSchemaType & { _id: Types.ObjectId }
 
 export const StockMetaDataModel: Model<StockMetadataSchemaType> =
   models.StockMetadata || model("StockMetadata", StockMetadataSchema);
