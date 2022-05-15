@@ -11,6 +11,8 @@ import getQuotesBySymbolList from "@api/Controller/stock/timeseries/intraday/get
 import newSession from "@api/Controller/session/new";
 import getSession from "@api/Controller/session/get";
 import NotFound from "@api/Error/Http/NotFound";
+import addBookmark from "@api/Controller/session/addBookmark";
+import removeBookmark from "@api/Controller/session/removeBookmark";
 
 require("express-async-errors");
 
@@ -62,6 +64,34 @@ app.get("/api/session/:id", async (req: Request, res: Response) => {
 
   res.status(200).send({ session });
 });
+
+app.put(
+  "/api/session/:id/bookmarks/add/:symbol",
+  async (req: Request, res: Response) => {
+    const { id, symbol } = req.params;
+
+    await addBookmark(id, symbol);
+
+    res
+      .status(200)
+      .send({ message: `Symbol ${symbol} add as bookmark to session ${id}` });
+  }
+);
+
+app.delete(
+  "/api/session/:id/bookmarks/delete/:symbol",
+  async (req: Request, res: Response) => {
+    const { id, symbol } = req.params;
+
+    await removeBookmark(id, symbol);
+
+    res
+      .status(200)
+      .send({
+        message: `Symbol ${symbol} bookmark removed from session ${id}`,
+      });
+  }
+);
 
 // Stock Metadata
 

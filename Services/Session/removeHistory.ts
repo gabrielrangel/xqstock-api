@@ -1,20 +1,21 @@
 import dbConnect from "@api/lib/dbConnect";
 import SessionRepository from "@api/Repository/Session";
+import removeBookmark from "@api/Services/Session/removeBookmark";
 
-export async function updateHistory(sessionId: string, symbol: string) {
+export async function removeHistory(sessionId: string, symbol: string) {
   await dbConnect();
 
   const session = await SessionRepository.findOneById(sessionId);
 
   if (session) {
-    session.SymbolHistory.push(symbol);
-    session.SymbolHistory = session.SymbolHistory.sort();
     session.SymbolHistory = session.SymbolHistory.filter(
-      (item, pos, ary) => !pos || item != ary[pos - 1]
+      (item) => item != symbol
     );
 
     await session.save();
   }
+
+  await removeBookmark(sessionId, symbol);
 }
 
-export default updateHistory;
+export default removeHistory;
