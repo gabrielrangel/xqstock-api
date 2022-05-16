@@ -7,7 +7,7 @@ export * from "./types";
 export type StockTimeSerieSchemaType = ITimeSerie & {
   Symbol: string;
   Date: Date;
-  Kind: string;
+  Kind: StockTimeSerieKindEnum;
   Region: string;
 };
 

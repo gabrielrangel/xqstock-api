@@ -1,12 +1,14 @@
 import dbConnect from "@api/lib/dbConnect";
-import StockMetaDataModel from "@api/Models/Stock/Metadata";
+import StockMetaDataModel, {
+  StockMetadataSchemaType,
+} from "@api/Models/Stock/Metadata";
 
 import AlphaAdvantageApi from "@api/lib/AlphaAdvantageApi";
 
 const { ALPHA_API_RETRY_TIMEOUT } = process.env;
 
 export async function fetchAndPersistMetadata(Symbol: string) {
-  let Bestmatches;
+  let Bestmatches: StockMetadataSchemaType[] | undefined;
 
   let timeOut = false;
   setTimeout(() => (timeOut = true), Number(ALPHA_API_RETRY_TIMEOUT ?? 0));
@@ -25,16 +27,16 @@ export async function fetchAndPersistMetadata(Symbol: string) {
     return;
   }
 
-  await dbConnect();
-
-  Promise.all(
-    Bestmatches.map((match) =>
-      StockMetaDataModel.findOneAndUpdate({ Symbol: match.Symbol }, match, {
-        upsert: true,
-        setDefaultsOnInsert: true,
-      }).exec()
+  await dbConnect()
+    .then(() =>
+      (Bestmatches as StockMetadataSchemaType[]).map((match) =>
+        StockMetaDataModel.findOneAndUpdate({ Symbol: match.Symbol }, match, {
+          upsert: true,
+          setDefaultsOnInsert: true,
+        }).exec()
+      )
     )
-  );
+    .then((promises) => Promise.all(promises));
 }
 
 export default fetchAndPersistMetadata;

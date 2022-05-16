@@ -85,11 +85,9 @@ app.delete(
 
     await removeBookmark(id, symbol);
 
-    res
-      .status(200)
-      .send({
-        message: `Symbol ${symbol} bookmark removed from session ${id}`,
-      });
+    res.status(200).send({
+      message: `Symbol ${symbol} bookmark removed from session ${id}`,
+    });
   }
 );
 

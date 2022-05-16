@@ -7,11 +7,15 @@ import StockTimeSerieModel, {
 import { FilterQuery } from "mongoose";
 import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
 import hasMissingDays from "@api/Services/TimeSeries/hasMissingDays";
+import isSaturday from "date-fns/isSaturday";
+import isSunday from "date-fns/isSunday";
+import previousFriday from "date-fns/previousFriday";
+import isSameDay from "date-fns/isSameDay";
 
 export async function findByMetadataAndPeriod(
   metadata: TStockMetadataModel,
-  endDate: string | Date,
-  startDate?: string | Date
+  endDate: Date,
+  startDate?: Date
 ): Promise<(TStockTimeSeriesModel | null)[]> {
   const { Symbol, Region } = metadata;
 
@@ -19,7 +23,10 @@ export async function findByMetadataAndPeriod(
     Kind: "intraday",
     Symbol: Symbol.toUpperCase(),
     Date: {
-      $lte: new Date(endDate),
+      $lte:
+        isSaturday(endDate) || isSunday(endDate)
+          ? previousFriday(endDate)
+          : endDate,
     },
   };
 
@@ -32,17 +39,14 @@ export async function findByMetadataAndPeriod(
   );
 
   if (
-    !(await hasMissingDays(timeSeries, Region, filter.Date.$lte)) &&
-    timeSeries.length > 0
+    timeSeries.length > 0 &&
+    timeSeries.some(({ Date }) => isSameDay(Date, filter.Date.$lte)) &&
+    !(await hasMissingDays(timeSeries, Region, filter.Date.$lte))
   ) {
     return timeSeries;
   }
 
-  await AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
-    metadata,
-    new Date(endDate),
-    startDate ? new Date(startDate) : undefined
-  );
+  await AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(metadata);
 
   return dbConnect().then(() =>
     StockTimeSerieModel.find(filter).sort({ Date: 1 }).exec()

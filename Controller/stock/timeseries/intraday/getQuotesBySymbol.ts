@@ -21,7 +21,11 @@ export async function getQuotesBySymbol(
       ? IntradayTimeSeriesRepository.findByMetadataAndPeriod
       : IntradayTimeSeriesRepository.findByMetadata;
 
-  const timeseries = await query(metadata, String(endDate), String(startDate));
+  const timeseries = await query(
+    metadata,
+    new Date(String(endDate)),
+    new Date(String(startDate))
+  );
 
   await updateHistory(sessionId ?? "", metadata.Symbol);
 
