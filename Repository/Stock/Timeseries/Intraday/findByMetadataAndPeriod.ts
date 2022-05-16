@@ -6,14 +6,14 @@ import StockTimeSerieModel, {
 } from "@api/Models/Stock/TimeSeries";
 import { FilterQuery } from "mongoose";
 import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
-import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
+import hasMissingDays from "@api/Services/TimeSeries/hasMissingDays";
 
 export async function findByMetadataAndPeriod(
   metadata: TStockMetadataModel,
   endDate: string | Date,
   startDate?: string | Date
 ): Promise<(TStockTimeSeriesModel | null)[]> {
-  const { Symbol } = metadata;
+  const { Symbol, Region } = metadata;
 
   const filter: FilterQuery<StockTimeSerieSchemaType> = {
     Kind: "intraday",
@@ -27,29 +27,26 @@ export async function findByMetadataAndPeriod(
     filter.Date["$gte"] = new Date(startDate);
   }
 
-  await dbConnect();
-
-  const timeSeries = await StockTimeSerieModel.find(filter).exec();
-
-  const curAndPevDatesList = timeSeries.map((ts, i, list) => [
-    ts.Date,
-    list[--i]?.Date,
-  ]);
-  const dateDiff = curAndPevDatesList.map(([cur, prev]) =>
-    differenceInBusinessDays(cur, prev ?? cur)
+  const timeSeries = await dbConnect().then(() =>
+    StockTimeSerieModel.find(filter).sort({ Date: 1 }).exec()
   );
-  const maxDateDiff = Math.max(...dateDiff);
 
-  if (maxDateDiff < 1 && timeSeries.length > 0) {
+  if (
+    !(await hasMissingDays(timeSeries, Region, filter.Date.$lte)) &&
+    timeSeries.length > 0
+  ) {
     return timeSeries;
   }
+
   await AlphaAdvantageService.fetchAndPersistIntradayTimeSeries(
     metadata,
     new Date(endDate),
     startDate ? new Date(startDate) : undefined
   );
 
-  return StockTimeSerieModel.find(filter).exec();
+  return dbConnect().then(() =>
+    StockTimeSerieModel.find(filter).sort({ Date: 1 }).exec()
+  );
 }
 
 export default findByMetadataAndPeriod;
