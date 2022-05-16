@@ -13,8 +13,6 @@ export async function findOneBySymbol(symbol: string) {
 
   const StockMetaData = await StockMetaDataModel.findOne(filter).exec();
 
-  console.log(symbol, StockMetaData);
-
   if (StockMetaData) {
     return StockMetaData;
   }

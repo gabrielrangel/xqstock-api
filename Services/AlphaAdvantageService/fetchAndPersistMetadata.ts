@@ -15,6 +15,10 @@ export async function fetchAndPersistMetadata(Symbol: string) {
     Bestmatches = await AlphaAdvantageApi.symbolSearch(Symbol)
       .then(({ Bestmatches }) => Bestmatches ?? [])
       .catch(() => undefined);
+
+    if (!Bestmatches) {
+      await new Promise((r) => setTimeout(r, 2000));
+    }
   }
 
   if (!Bestmatches) {
