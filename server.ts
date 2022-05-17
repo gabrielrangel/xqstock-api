@@ -131,11 +131,11 @@ app.get(
   "/api/stock/timeseries/intraday/:symbol",
   async (req: Request, res: Response) => {
     const { symbol } = req.params;
-    const { startDate, endDate } = req.query;
+    const { startDate: start, endDate: end } = req.query;
     const data = await getQuotesBySymbol(
       symbol,
-      Array.isArray(startDate) ? startDate[0] : startDate,
-      Array.isArray(endDate) ? endDate[0] : endDate
+      Array.isArray(start) ? (start[0] as string) : (start as string),
+      Array.isArray(end) ? (end[0] as string) : (end as string)
     );
     res.status(200).json({ data, symbol });
   }
