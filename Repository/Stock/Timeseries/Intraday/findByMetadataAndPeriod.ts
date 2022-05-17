@@ -31,7 +31,7 @@ export async function findByMetadataAndPeriod(
   };
 
   if (startDate) {
-    filter.Date["$gte"] = new Date(startDate);
+    filter.Date["$gte"] = startDate as Date;
   }
 
   const timeSeries = await dbConnect().then(() =>
