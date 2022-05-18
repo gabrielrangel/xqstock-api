@@ -4,8 +4,10 @@ import dbConnect from "@api/lib/dbConnect";
 
 import StockIntradayTimeSeriesModel, {
   StockTimeSerieSchemaType,
+  TStockTimeSeriesModel,
 } from "@api/Models/Stock/TimeSeries";
 import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
+import { FilterQuery } from "mongoose";
 
 const { ALPHA_API_RETRY_TIMEOUT } = process.env;
 
@@ -13,7 +15,11 @@ export async function fetchAndPersistIntradayTimeSeries(
   { Symbol, Region }: TStockMetadataModel,
   outputSize: "full" | "compact" = "full"
 ) {
-  const extraObj = { Kind: StockTimeSerieKindEnum.INTRADAY, Symbol, Region };
+  const extraObj: Partial<TStockTimeSeriesModel> = {
+    Kind: StockTimeSerieKindEnum.INTRADAY,
+    Symbol,
+    Region,
+  };
 
   let timeSeries: StockTimeSerieSchemaType[] | undefined;
 
@@ -31,29 +37,32 @@ export async function fetchAndPersistIntradayTimeSeries(
       continue;
     }
 
-    timeSeries = Object.entries(TimeSeries).map(([date, timeSerie]) =>
-      Object.assign(timeSerie, {
-        ...extraObj,
-        Date: new Date(date),
-      })
+    timeSeries = Object.entries(TimeSeries).map(
+      ([date, timeSerie]) =>
+        Object.assign(timeSerie, {
+          ...extraObj,
+          Date: new Date(date),
+        }) as TStockTimeSeriesModel
     );
   }
 
-  if (!timeSeries) {
-    return;
-  }
-
-  await dbConnect()
-    .then(() =>
-      (timeSeries as StockTimeSerieSchemaType[]).map((timeserie) =>
-        StockIntradayTimeSeriesModel.findOneAndUpdate(
-          { ...extraObj, Date: timeserie.Date },
-          timeserie,
-          { upsert: true, setDefaultsOnInsert: true }
-        ).exec()
-      )
-    )
-    .then((promises) => Promise.all(promises));
+  return (await timeSeries)
+    ? dbConnect()
+        .then(() =>
+          (timeSeries as StockTimeSerieSchemaType[]).map(
+            (timeserie) =>
+              StockIntradayTimeSeriesModel.findOneAndUpdate(
+                {
+                  ...extraObj,
+                  Date: timeserie.Date,
+                } as FilterQuery<TStockTimeSeriesModel>,
+                timeserie,
+                { upsert: true, setDefaultsOnInsert: true }
+              ).exec() as Promise<TStockTimeSeriesModel>
+          )
+        )
+        .then((promises) => Promise.all(promises))
+    : timeSeries;
 }
 
 export default fetchAndPersistIntradayTimeSeries;
