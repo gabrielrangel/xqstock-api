@@ -4,7 +4,6 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import getMetadataBySymbol from "@api/Controller/stock/metadata/getMetadataBySymbol";
 import getQuotesBySymbol from "@api/Controller/stock/timeseries/intraday/getQuotesBySymbol";
 import { register } from "@api/Controller/token/register";
-import jwtAuth from "@api/Middleware/jwtAuth.ts/jwtAuth";
 import cors from "cors";
 import searchMetadataByKeyword from "@api/Controller/stock/metadata/searchMetadataByKeyword";
 import getQuotesBySymbolList from "@api/Controller/stock/timeseries/intraday/getQuotesBySymbolList";
@@ -24,7 +23,7 @@ const port = 3000;
 app.disable("etag");
 app.use(express.json({ type: "application/json" }));
 app.use(cors());
-app.use(jwtAuth);
+// app.use(jwtAuth);
 
 // index
 

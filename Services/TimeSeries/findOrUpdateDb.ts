@@ -6,12 +6,9 @@ import fetchAndPersistIntradayTimeSeries from "@api/Services/AlphaAdvantageServi
 
 export async function findOrUpdateDb(
   metadata: TStockMetadataModel,
-  endDateStr: string,
-  startDateStr?: string
+  endDate: Date,
+  startDate?: Date
 ) {
-  const startDate = startDateStr ? new Date(startDateStr) : undefined;
-  const endDate = new Date(endDateStr);
-
   const outputSize =
     !startDate || differenceInBusinessDays(endDate, startDate) > 100
       ? "full"
