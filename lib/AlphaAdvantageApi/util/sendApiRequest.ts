@@ -3,6 +3,13 @@ import axios, { AxiosRequestConfig } from "axios";
 import getEnv from "./getEnv";
 import normalizeAlphaAdvantageObjKeys from "./normalizeAlphaAdvantageObjKeys";
 import { AlphaAdvantageApiError } from "./AlphaAdvantageApiError";
+import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
+
+//@ts-ignore
+global.alphaApi = global.alphaApi ?? {};
+
+//@ts-ignore
+const lastCalls: Date[] = global.alphaApi.lastCalls ?? [];
 
 export default async function sendApiRequest(
   params: Record<string, string>,
@@ -20,6 +27,17 @@ export default async function sendApiRequest(
     url,
     method: "GET",
   };
+
+  const msSinceLastCall = differenceInMilliseconds(
+    new Date(),
+    lastCalls.shift() ?? new Date()
+  );
+
+  if (msSinceLastCall < 60000) {
+    await new Promise((r) => setTimeout(r, 60000 - msSinceLastCall));
+  }
+
+  lastCalls.push(new Date());
 
   console.log(`Updating Stock Database: ${JSON.stringify(request)}`);
 
