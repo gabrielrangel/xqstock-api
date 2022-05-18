@@ -17,7 +17,11 @@ export async function findOrSendToQueue(
     async (ts): Promise<TStockTimeSeriesModel[] | Job | PromiseLike<Job>> =>
       !(await hasMissingDays(ts, metadata.Region, endDate, startDate))
         ? ts
-        : TimeSeriesIntradayExtendedQueue.add(queueName, {})
+        : TimeSeriesIntradayExtendedQueue.add(queueName, {
+            metadata,
+            endDate,
+            startDate,
+          })
   );
 }
 

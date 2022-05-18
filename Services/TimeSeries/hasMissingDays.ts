@@ -33,7 +33,8 @@ export async function hasMissingDays(
     ({ Date: dateRight }, i, arr) => {
       const dateLeft = arr[i + 1]?.Date ?? dateRight;
 
-      const diff = differenceInBusinessDays(dateLeft, dateRight) - 1;
+      const diff =
+        differenceInBusinessDays(new Date(dateLeft), new Date(dateRight)) - 1;
 
       return Array.from({ length: diff }, (_, i) => addDays(dateRight, i + 1));
     }

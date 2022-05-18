@@ -122,7 +122,7 @@ app.post(
       startDate,
       endDate
     );
-    res.status(200).json({ data, symbol });
+    res.status(200).json({ data });
   }
 );
 
@@ -136,7 +136,7 @@ app.get(
       Array.isArray(start) ? (start[0] as string) : (start as string),
       Array.isArray(end) ? (end[0] as string) : (end as string)
     );
-    res.status(200).json({ data, symbol });
+    res.status(200).json({ data });
   }
 );
 
