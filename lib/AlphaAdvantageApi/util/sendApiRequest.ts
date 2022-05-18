@@ -21,6 +21,8 @@ export default async function sendApiRequest(
     method: "GET",
   };
 
+  console.log(`Updating Stock Database: ${JSON.stringify(request)}`);
+
   return axios(request)
     .then((res) => {
       const errorMsg = res.data["Error Message"] ?? res.data["Note"];
