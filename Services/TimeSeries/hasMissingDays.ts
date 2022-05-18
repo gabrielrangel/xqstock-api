@@ -9,15 +9,32 @@ import dbConnect from "@api/lib/dbConnect";
 export async function hasMissingDays(
   timeSeries: TStockTimeSeriesModel[],
   Region: string,
-  endDay: Date
+  startDate: Date,
+  endDate: Date
 ) {
-  const datesBetween = timeSeries.map(({ Date: dateRight }, i, arr) => {
-    const dateLeft = arr[i + 1]?.Date ?? endDay;
+  if (differenceInBusinessDays(endDate, startDate) === timeSeries.length) {
+    return false;
+  }
 
-    const diff = differenceInBusinessDays(dateLeft, dateRight) - 1;
+  if (timeSeries.length === 0) {
+    return true;
+  }
 
-    return Array.from({ length: diff }, (_, i) => addDays(dateRight, i + 1));
-  });
+  const timeSeriesWithEdgeDates = [
+    { Date: startDate } as TStockTimeSeriesModel,
+    ...timeSeries,
+    { Date: endDate } as TStockTimeSeriesModel,
+  ];
+
+  const datesBetween = timeSeriesWithEdgeDates.map(
+    ({ Date: dateRight }, i, arr) => {
+      const dateLeft = arr[i + 1]?.Date ?? dateRight;
+
+      const diff = differenceInBusinessDays(dateLeft, dateRight) - 1;
+
+      return Array.from({ length: diff }, (_, i) => addDays(dateRight, i + 1));
+    }
+  );
 
   const flatDatesBetween = datesBetween.flat();
 
@@ -28,11 +45,7 @@ export async function hasMissingDays(
       Kind: StockTimeSerieKindEnum.INTRADAY,
     }));
 
-    if ($or.length > 0) {
-      return StockTimeSerieModel.find({ $or }).exec();
-    }
-
-    return [];
+    return $or.length ? StockTimeSerieModel.find({ $or }).exec() : [];
   });
 
   return timeseriesInDatesBetween.length > 0;
