@@ -10,7 +10,7 @@ export async function findByMetadataAndPeriod(
   metadata: TStockMetadataModel,
   endDate: Date,
   startDate?: Date
-): Promise<(TStockTimeSeriesModel | null)[]> {
+): Promise<TStockTimeSeriesModel[]> {
   const { Symbol } = metadata;
 
   const filter: FilterQuery<StockTimeSerieSchemaType> = {

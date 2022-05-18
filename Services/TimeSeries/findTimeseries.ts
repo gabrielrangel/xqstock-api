@@ -3,12 +3,9 @@ import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
 
 export async function findTimeSeries(
   metadata: TStockMetadataModel,
-  endDateStr: string,
-  startDateStr?: string
+  endDate: Date,
+  startDate?: Date
 ) {
-  const startDate = startDateStr ? new Date(startDateStr) : undefined;
-  const endDate = new Date(endDateStr);
-
   const query =
     startDate && endDate
       ? IntradayTimeSeriesRepository.findByMetadataAndPeriod

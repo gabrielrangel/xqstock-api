@@ -10,13 +10,10 @@ import findTimeSeries from "@api/Services/TimeSeries/findTimeseries";
 
 export async function findOrSendToQueue(
   metadata: TStockMetadataModel,
-  endDateStr: string,
-  startDateStr?: string
+  endDate: Date,
+  startDate?: Date
 ) {
-  const startDate = startDateStr ? new Date(startDateStr) : undefined;
-  const endDate = new Date(endDateStr);
-
-  return findTimeSeries(metadata, endDateStr, startDateStr).then(
+  return findTimeSeries(metadata, endDate, startDate).then(
     (ts): TStockTimeSeriesModel[] | Job | PromiseLike<Job> =>
       !startDate || !hasMissingDays(ts, metadata.Region, startDate, endDate)
         ? ts

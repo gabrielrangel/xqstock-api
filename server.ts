@@ -26,7 +26,7 @@ app.use(express.json({ type: "application/json" }));
 app.use(cors());
 app.use(jwtAuth);
 
-// inde
+// index
 
 app.get("/api", (_: Request, res: Response) => {
   res.json({ message: "xqstock api" });

@@ -17,7 +17,7 @@ export async function findOrUpdateDb(
       ? "full"
       : "compact";
 
-  return findTimeSeries(metadata, endDateStr, startDateStr).then((ts) =>
+  return findTimeSeries(metadata, endDate, startDate).then((ts) =>
     !startDate || !hasMissingDays(ts, metadata.Region, startDate, endDate)
       ? ts
       : fetchAndPersistIntradayTimeSeries(metadata, outputSize)
