@@ -1,34 +1,30 @@
-import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import AlphaAdvantageApi from "@api/lib/AlphaAdvantageApi";
+import { Queue, QueueScheduler, Worker } from "bullmq";
 import getConnection from "@api/Services/Queue/getConnection";
-
-interface TimeSeriesIntradayExtendedOptions {
-  symbol: string;
-  outputsize: "compact" | "full";
-}
-
-const connection = getConnection();
+import IOptions from "@api/Services/Queue/AlphaAdvantageApi/types";
+import processor from "./processor";
 
 const name = "TimeSeriesIntradayExtended";
 
-export const TimeSeriesIntradayExtendedQueue =
-  new Queue<TimeSeriesIntradayExtendedOptions>(name, {
-    connection,
-  });
+// @ts-ignore
+global[name] = global[name] ?? {};
 
-export const TimeSeriesIntradayExtendedQueueScheduler = new QueueScheduler(
-  name,
-  { connection }
-);
+// @ts-ignore
+const cached = global[name] as {
+  queue: Queue | undefined;
+  worker: Worker | undefined;
+  scheduler: QueueScheduler | undefined;
+};
 
-export const TimeSeriesIntradayExtendedQueueWorker = new Worker(
-  name,
-  async (job: Job<TimeSeriesIntradayExtendedOptions>) => {
-    const { symbol, outputsize } = job.data;
-    return AlphaAdvantageApi.timeSeriesIntradayExtended(symbol, outputsize);
-  },
-  { concurrency: 1, connection }
-);
+const connection = getConnection();
+
+export const TimeSeriesIntradayExtendedQueue = (cached.queue =
+  cached.queue ?? new Queue<IOptions>(name, { connection }));
+
+export const TimeSeriesIntradayExtendedQueueScheduler = (cached.scheduler =
+  cached.scheduler ?? new QueueScheduler(name, { connection }));
+
+export const TimeSeriesIntradayExtendedQueueWorker = (cached.worker =
+  cached.worker ?? new Worker(name, processor, { concurrency: 1, connection }));
 
 export default {
   TimeSeriesIntradayExtendedQueue,
