@@ -1,14 +1,12 @@
 import isSaturday from "date-fns/isSaturday";
 import isSunday from "date-fns/isSunday";
 import previousFriday from "date-fns/previousFriday";
-import { MetadataRepository } from "@api/Repository/Stock";
-import {
-  queueName,
-  SymbolSearchQueue,
-} from "@api/Services/Queue/AlphaAdvantageApi/SymbolSearch";
 import NoContent from "@api/Error/Http/NoContent";
 import updateHistory from "@api/Services/Session/updateHistory";
-import findOrSendToQueue from "@api/Services/TimeSeries/findOrSendToQueue";
+import findMetadataOrSendToQueue from "@api/Services/Metadata/find/findOrSendToQueue";
+import { Job } from "bullmq";
+import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
+import findTimeSerieOrSendToQueue from "@api/Services/TimeSeries/findOrSendToQueue";
 
 const isWeekend = (date: Date | number) => isSaturday(date) || isSunday(date);
 
@@ -26,14 +24,16 @@ export async function getQuotesBySymbol(
   endDateStr?: string | undefined,
   sessionId?: string
 ) {
-  const metadata = await MetadataRepository.findOneBySymbol(symbol);
+  const metadata = await findMetadataOrSendToQueue(symbol);
 
-  if (!metadata) {
-    await SymbolSearchQueue.add(queueName, { keyword: symbol });
+  if ((metadata as Job)?.queueName) {
     throw NoContent(`Trying to get symbol ${symbol} metadata`);
   }
 
-  await updateHistory(sessionId ?? "", metadata.Symbol);
+  await updateHistory(
+    sessionId ?? "",
+    (metadata as TStockMetadataModel).Symbol
+  );
 
   const startDate = startDateStr
     ? getLastWeekday(startDateStr)
@@ -41,10 +41,14 @@ export async function getQuotesBySymbol(
 
   const endDate = getLastWeekday(endDateStr ?? Date.now());
 
-  const timeseries = await findOrSendToQueue(metadata, endDate, startDate);
+  const timeseries = await findTimeSerieOrSendToQueue(
+    metadata as TStockMetadataModel,
+    endDate,
+    startDate
+  );
 
   if (!Array.isArray(timeseries)) {
-    throw NoContent(`Tring to get timeseries for symbol ${symbol}`);
+    throw NoContent(`Trying to get timeseries for symbol ${symbol}`);
   }
 
   return { metadata, timeseries };

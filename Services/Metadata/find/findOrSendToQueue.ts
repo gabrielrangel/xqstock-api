@@ -1,12 +1,12 @@
-import searchMetadata from "@api/Services/Metadata/searchMetadata";
 import {
   queueName,
   SymbolSearchQueue,
 } from "@api/Services/Queue/AlphaAdvantageApi/SymbolSearch";
+import findMetadata from "@api/Services/Metadata/find/findMetadata";
 
 export async function findOrSendToQueue(keyword: string) {
-  return searchMetadata(keyword).then(async (md) =>
-    md.length > 0 ? md : SymbolSearchQueue.add(queueName, { keyword })
+  return findMetadata(keyword).then(async (md) =>
+    md ? md : SymbolSearchQueue.add(queueName, { keyword })
   );
 }
 

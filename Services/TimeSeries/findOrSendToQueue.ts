@@ -15,13 +15,13 @@ export async function findOrSendToQueue(
 ) {
   return findTimeSeries(metadata, endDate, startDate).then(
     async (ts): Promise<TStockTimeSeriesModel[] | Job | PromiseLike<Job>> =>
-      !(await hasMissingDays(ts, metadata.Region, endDate, startDate))
-        ? ts
-        : TimeSeriesIntradayExtendedQueue.add(queueName, {
+      (await hasMissingDays(ts, metadata.Region, endDate, startDate))
+        ? TimeSeriesIntradayExtendedQueue.add(queueName, {
             metadata,
             endDate,
             startDate,
           })
+        : ts
   );
 }
 

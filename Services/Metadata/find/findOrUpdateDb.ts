@@ -1,9 +1,9 @@
-import searchMetadata from "@api/Services/Metadata/searchMetadata";
+import searchMetadata from "@api/Services/Metadata/search/searchMetadata";
 import fetchAndPersistMetadata from "@api/Services/AlphaAdvantageService/fetchAndPersistMetadata";
 
 export async function findOrUpdateDb(keyword: string) {
   return searchMetadata(keyword).then(async (md) =>
-    md.length > 0 ? md : fetchAndPersistMetadata(keyword)
+    md ? md : await fetchAndPersistMetadata(keyword)
   );
 }
 
