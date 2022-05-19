@@ -1,5 +1,5 @@
 import { Job } from "bullmq";
-import IOptions from "@api/Services/Queue/AlphaAdvantageApi/types";
+import IOptions from "@api/Services/Queue/AlphaAdvantageApi/TimeSeriesIntradayExtended/types";
 import findOrUpdateDb from "@api/Services/TimeSeries/findOrUpdateDb";
 
 export async function TimeSeriesIntradayExtendedQueueProcessor(

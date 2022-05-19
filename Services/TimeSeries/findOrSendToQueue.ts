@@ -3,7 +3,7 @@ import hasMissingDays from "@api/Services/TimeSeries/hasMissingDays";
 import {
   queueName,
   TimeSeriesIntradayExtendedQueue,
-} from "@api/Services/Queue/AlphaAdvantageApi/timeSeriesIntradayExtended";
+} from "@api/Services/Queue/AlphaAdvantageApi/TimeSeriesIntradayExtended";
 import { TStockTimeSeriesModel } from "@api/Models/Stock/TimeSeries";
 import { Job } from "bullmq";
 import findTimeSeries from "@api/Services/TimeSeries/findTimeseries";

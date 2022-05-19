@@ -6,10 +6,9 @@ import { AlphaAdvantageApiError } from "./AlphaAdvantageApiError";
 import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 
 //@ts-ignore
-global.alphaApi = global.alphaApi ?? {};
+const cache = (global.alphaApi = global.alphaApi ?? {});
 
-//@ts-ignore
-const lastCalls: Date[] = global.alphaApi.lastCalls ?? [];
+const lastCalls = (cache.lastCalls = cache.lastCalls?.slice(-5) ?? []);
 
 export default async function sendApiRequest(
   params: Record<string, string>,
@@ -28,13 +27,15 @@ export default async function sendApiRequest(
     method: "GET",
   };
 
-  const msSinceLastCall = differenceInMilliseconds(
-    new Date(),
-    lastCalls.shift() ?? new Date()
-  );
+  if (lastCalls.length >= 5) {
+    const msSinceLastCall = differenceInMilliseconds(
+      new Date(),
+      lastCalls.shift() ?? new Date()
+    );
 
-  if (msSinceLastCall < 60000) {
-    await new Promise((r) => setTimeout(r, 60000 - msSinceLastCall));
+    if (msSinceLastCall < 60000) {
+      await new Promise((r) => setTimeout(r, 60000 - msSinceLastCall));
+    }
   }
 
   lastCalls.push(new Date());

@@ -1,6 +1,6 @@
 import { Queue, QueueScheduler, Worker } from "bullmq";
 import getConnection from "@api/Services/Queue/getConnection";
-import IOptions from "@api/Services/Queue/AlphaAdvantageApi/types";
+import IOptions from "@api/Services/Queue/AlphaAdvantageApi/TimeSeriesIntradayExtended/types";
 import processor from "./processor";
 
 export const queueName = "TimeSeriesIntradayExtended";

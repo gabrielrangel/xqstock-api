@@ -1,9 +1,13 @@
-import { NotFound } from "@api/Error/Http";
-import { MetadataRepository } from "@api/Repository/Stock/Metadata/index";
-import updateHistory from "@api/Services/Session/updateHistory";
 import isSaturday from "date-fns/isSaturday";
 import isSunday from "date-fns/isSunday";
 import previousFriday from "date-fns/previousFriday";
+import { MetadataRepository } from "@api/Repository/Stock";
+import {
+  queueName,
+  SymbolSearchQueue,
+} from "@api/Services/Queue/AlphaAdvantageApi/SymbolSearch";
+import NoContent from "@api/Error/Http/NoContent";
+import updateHistory from "@api/Services/Session/updateHistory";
 import findOrSendToQueue from "@api/Services/TimeSeries/findOrSendToQueue";
 
 const isWeekend = (date: Date | number) => isSaturday(date) || isSunday(date);
@@ -25,7 +29,8 @@ export async function getQuotesBySymbol(
   const metadata = await MetadataRepository.findOneBySymbol(symbol);
 
   if (!metadata) {
-    throw NotFound(`Cannot find Stock with symbol: ${symbol}`);
+    await SymbolSearchQueue.add(queueName, { keyword: symbol });
+    throw NoContent(`Trying to get symbol ${symbol} metadata`);
   }
 
   await updateHistory(sessionId ?? "", metadata.Symbol);
@@ -37,6 +42,10 @@ export async function getQuotesBySymbol(
   const endDate = getLastWeekday(endDateStr ?? Date.now());
 
   const timeseries = await findOrSendToQueue(metadata, endDate, startDate);
+
+  if (!Array.isArray(timeseries)) {
+    throw NoContent(`Tring to get timeseries for symbol ${symbol}`);
+  }
 
   return { metadata, timeseries };
 }

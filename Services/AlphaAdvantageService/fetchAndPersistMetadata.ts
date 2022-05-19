@@ -7,14 +7,16 @@ import AlphaAdvantageApi from "@api/lib/AlphaAdvantageApi";
 
 const { ALPHA_API_RETRY_TIMEOUT } = process.env;
 
-export async function fetchAndPersistMetadata(Symbol: string) {
+export async function fetchAndPersistMetadata(keyword: string) {
   let Bestmatches: StockMetadataSchemaType[] | undefined;
 
   let timeOut = false;
   setTimeout(() => (timeOut = true), Number(ALPHA_API_RETRY_TIMEOUT ?? 0));
 
   while (!Bestmatches && !timeOut) {
-    Bestmatches = await AlphaAdvantageApi.symbolSearch(Symbol)
+    Bestmatches = await AlphaAdvantageApi.symbolSearch(
+      encodeURIComponent(keyword)
+    )
       .then(({ Bestmatches }) => Bestmatches ?? [])
       .catch(() => undefined);
 
