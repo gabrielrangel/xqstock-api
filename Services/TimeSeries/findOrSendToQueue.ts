@@ -4,8 +4,6 @@ import {
   queueName,
   TimeSeriesIntradayExtendedQueue,
 } from "@api/Services/Queue/AlphaAdvantageApi/TimeSeriesIntradayExtended";
-import { TStockTimeSeriesModel } from "@api/Models/Stock/TimeSeries";
-import { Job } from "bullmq";
 import findTimeSeries from "@api/Services/TimeSeries/findTimeseries";
 
 export async function findOrSendToQueue(
@@ -13,16 +11,15 @@ export async function findOrSendToQueue(
   endDate: Date,
   startDate?: Date
 ) {
-  return findTimeSeries(metadata, endDate, startDate).then(
-    async (ts): Promise<TStockTimeSeriesModel[] | Job | PromiseLike<Job>> =>
-      (await hasMissingDays(ts, metadata.Region, endDate, startDate))
-        ? TimeSeriesIntradayExtendedQueue.add(queueName, {
-            metadata,
-            endDate,
-            startDate,
-          })
-        : ts
-  );
+  return findTimeSeries(metadata, endDate, startDate).then(async (ts) => {
+    const data = { metadata, endDate, startDate };
+    return hasMissingDays(ts, metadata.Region, endDate, startDate).then(
+      (hmd) => {
+        hmd && TimeSeriesIntradayExtendedQueue.add(queueName, data);
+        return ts;
+      }
+    );
+  });
 }
 
 export default findOrSendToQueue;

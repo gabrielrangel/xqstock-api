@@ -4,7 +4,6 @@ import previousFriday from "date-fns/previousFriday";
 import NoContent from "@api/Error/Http/NoContent";
 import updateHistory from "@api/Services/Session/updateHistory";
 import findMetadataOrSendToQueue from "@api/Services/Metadata/find/findOrSendToQueue";
-import { Job } from "bullmq";
 import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
 import findTimeSerieOrSendToQueue from "@api/Services/TimeSeries/findOrSendToQueue";
 
@@ -26,7 +25,7 @@ export async function getQuotesBySymbol(
 ) {
   const metadata = await findMetadataOrSendToQueue(symbol);
 
-  if ((metadata as Job)?.queueName) {
+  if (metadata === null) {
     throw NoContent(`Trying to get symbol ${symbol} metadata`);
   }
 
