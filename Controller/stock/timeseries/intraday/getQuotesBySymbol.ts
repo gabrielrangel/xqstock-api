@@ -40,17 +40,13 @@ export async function getQuotesBySymbol(
 
   const endDate = getLastWeekday(endDateStr ?? Date.now());
 
-  const timeseries = await findTimeSerieOrSendToQueue(
+  const { timeseries, isComplete } = await findTimeSerieOrSendToQueue(
     metadata as TStockMetadataModel,
     endDate,
     startDate
   );
 
-  if (!Array.isArray(timeseries)) {
-    throw NoContent(`Trying to get timeseries for symbol ${symbol}`);
-  }
-
-  return { metadata, timeseries };
+  return { metadata, timeseries, isComplete };
 }
 
 export default getQuotesBySymbol;

@@ -3,6 +3,10 @@ import hasMissingDays from "@api/Services/TimeSeries/hasMissingDays";
 import findTimeSeries from "@api/Services/TimeSeries/findTimeseries";
 import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
 import fetchAndPersistIntradayTimeSeries from "@api/Services/AlphaAdvantageService/fetchAndPersistIntradayTimeSeries";
+import {
+  queueName,
+  TimeSeriesIntradayExtendedQueue,
+} from "@api/Services/Queue/AlphaAdvantageApi/TimeSeriesIntradayExtended";
 
 export async function findOrUpdateDb(
   metadata: TStockMetadataModel,
@@ -15,9 +19,10 @@ export async function findOrUpdateDb(
       : "compact";
 
   return findTimeSeries(metadata, endDate, startDate).then(async (ts) =>
-    !(await hasMissingDays(ts, metadata.Region, endDate, startDate))
-      ? ts
-      : fetchAndPersistIntradayTimeSeries(metadata, outputSize)
+    hasMissingDays(ts, metadata.Region, endDate, startDate).then((hmd) => {
+      hmd && fetchAndPersistIntradayTimeSeries(metadata, outputSize);
+      return { isComplete: !hmd, timeseries: ts };
+    })
   );
 }
 

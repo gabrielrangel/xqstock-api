@@ -12,6 +12,7 @@ import getSession from "@api/Controller/session/get";
 import NotFound from "@api/Error/Http/NotFound";
 import addBookmark from "@api/Controller/session/addBookmark";
 import removeBookmark from "@api/Controller/session/removeBookmark";
+import HttpStatusCodeEnum from "@api/Error/Http/Enum/HttpStatusCode";
 
 require("express-async-errors");
 
@@ -136,7 +137,14 @@ app.get(
       Array.isArray(start) ? (start[0] as string) : (start as string),
       Array.isArray(end) ? (end[0] as string) : (end as string)
     );
-    res.status(200).json({ data });
+
+    res
+      .status(
+        data.isComplete
+          ? HttpStatusCodeEnum.Success
+          : HttpStatusCodeEnum.PartialContent
+      )
+      .json({ data });
   }
 );
 

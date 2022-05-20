@@ -16,7 +16,7 @@ export async function findOrSendToQueue(
     return hasMissingDays(ts, metadata.Region, endDate, startDate).then(
       (hmd) => {
         hmd && TimeSeriesIntradayExtendedQueue.add(queueName, data);
-        return ts;
+        return { isComplete: !hmd, timeseries: ts };
       }
     );
   });
