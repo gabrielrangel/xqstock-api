@@ -5,9 +5,10 @@ import {
 } from "@api/Services/Queue/AlphaAdvantageApi/SymbolSearch";
 
 export async function searchOrSendToQueue(keyword: string) {
-  return searchMetadata(keyword).then(async (md) =>
-    md && md.length > 0 ? md : SymbolSearchQueue.add(queueName, { keyword })
-  );
+  return searchMetadata(keyword).then(async (md) => {
+    (md && md.length) || (await SymbolSearchQueue.add(queueName, { keyword }));
+    return md;
+  });
 }
 
 export default searchOrSendToQueue;

@@ -13,6 +13,7 @@ import NotFound from "@api/Error/Http/NotFound";
 import addBookmark from "@api/Controller/session/addBookmark";
 import removeBookmark from "@api/Controller/session/removeBookmark";
 import HttpStatusCodeEnum from "@api/Error/Http/Enum/HttpStatusCode";
+import jwtAuth from "./Middleware/jwtAuth.ts/jwtAuth";
 
 require("express-async-errors");
 
@@ -24,7 +25,7 @@ const port = 3000;
 app.disable("etag");
 app.use(express.json({ type: "application/json" }));
 app.use(cors());
-// app.use(jwtAuth);
+app.use(jwtAuth);
 
 // index
 
