@@ -123,7 +123,11 @@ app.post(
       startDate,
       endDate
     );
-    res.status(200).json({ data });
+
+    const complete = data.some(({ isComplete }) => !isComplete);
+    const status = HttpStatusCodeEnum[complete ? "Success" : "PartialContent"];
+
+    res.status(status).json({ data });
   }
 );
 
@@ -138,13 +142,10 @@ app.get(
       Array.isArray(end) ? (end[0] as string) : (end as string)
     );
 
-    res
-      .status(
-        data.isComplete
-          ? HttpStatusCodeEnum.Success
-          : HttpStatusCodeEnum.PartialContent
-      )
-      .json({ data });
+    const { isComplete: complete } = data;
+    const status = HttpStatusCodeEnum[complete ? "Success" : "PartialContent"];
+
+    res.status(status).json({ data });
   }
 );
 
