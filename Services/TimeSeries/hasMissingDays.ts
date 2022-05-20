@@ -9,9 +9,12 @@ import dbConnect from "@api/lib/dbConnect";
 export async function hasMissingDays(
   timeSeries: TStockTimeSeriesModel[],
   Region: string,
-  endDate: Date,
-  startDate?: Date
+  endDateIn: Date | string,
+  startDateIn?: Date | string
 ) {
+  const endDate = new Date(endDateIn);
+  const startDate = startDateIn && new Date(startDateIn);
+
   if (
     startDate &&
     differenceInBusinessDays(endDate, startDate) === timeSeries.length

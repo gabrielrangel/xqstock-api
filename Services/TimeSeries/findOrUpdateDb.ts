@@ -3,16 +3,15 @@ import hasMissingDays from "@api/Services/TimeSeries/hasMissingDays";
 import findTimeSeries from "@api/Services/TimeSeries/findTimeseries";
 import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
 import fetchAndPersistIntradayTimeSeries from "@api/Services/AlphaAdvantageService/fetchAndPersistIntradayTimeSeries";
-import {
-  queueName,
-  TimeSeriesIntradayExtendedQueue,
-} from "@api/Services/Queue/AlphaAdvantageApi/TimeSeriesIntradayExtended";
 
 export async function findOrUpdateDb(
   metadata: TStockMetadataModel,
-  endDate: Date,
-  startDate?: Date
+  endDateIn: Date | string,
+  startDateIn?: Date | string
 ) {
+  const endDate = new Date(endDateIn);
+  const startDate = startDateIn ? new Date(startDateIn) : undefined;
+
   const outputSize =
     !startDate || differenceInBusinessDays(endDate, startDate) > 100
       ? "full"
