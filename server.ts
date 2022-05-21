@@ -125,7 +125,7 @@ app.post(
       endDate
     );
 
-    const complete = data.some(({ isComplete }) => !isComplete);
+    const complete = !data.some(({ isComplete }) => isComplete === false);
     const status = HttpStatusCodeEnum[complete ? "Success" : "PartialContent"];
 
     res.status(status).json({ data });
