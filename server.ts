@@ -4,7 +4,6 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import getMetadataBySymbol from "@api/Controller/stock/metadata/getMetadataBySymbol";
 import getQuotesBySymbol from "@api/Controller/stock/timeseries/intraday/getQuotesBySymbol";
 import { register } from "@api/Controller/token/register";
-import jwtAuth from "@api/Middleware/jwtAuth.ts/jwtAuth";
 import cors from "cors";
 import searchMetadataByKeyword from "@api/Controller/stock/metadata/searchMetadataByKeyword";
 import getQuotesBySymbolList from "@api/Controller/stock/timeseries/intraday/getQuotesBySymbolList";
@@ -13,6 +12,8 @@ import getSession from "@api/Controller/session/get";
 import NotFound from "@api/Error/Http/NotFound";
 import addBookmark from "@api/Controller/session/addBookmark";
 import removeBookmark from "@api/Controller/session/removeBookmark";
+import HttpStatusCodeEnum from "@api/Error/Http/Enum/HttpStatusCode";
+import jwtAuth from "./Middleware/jwtAuth.ts/jwtAuth";
 
 require("express-async-errors");
 
@@ -85,11 +86,9 @@ app.delete(
 
     await removeBookmark(id, symbol);
 
-    res
-      .status(200)
-      .send({
-        message: `Symbol ${symbol} bookmark removed from session ${id}`,
-      });
+    res.status(200).send({
+      message: `Symbol ${symbol} bookmark removed from session ${id}`,
+    });
   }
 );
 
@@ -125,7 +124,11 @@ app.post(
       startDate,
       endDate
     );
-    res.status(200).json({ data, symbol });
+
+    const complete = !data.some(({ isComplete }) => isComplete === false);
+    const status = HttpStatusCodeEnum[complete ? "Success" : "PartialContent"];
+
+    res.status(status).json({ data });
   }
 );
 
@@ -133,13 +136,17 @@ app.get(
   "/api/stock/timeseries/intraday/:symbol",
   async (req: Request, res: Response) => {
     const { symbol } = req.params;
-    const { startDate, endDate } = req.query;
+    const { startDate: start, endDate: end } = req.query;
     const data = await getQuotesBySymbol(
       symbol,
-      Array.isArray(startDate) ? startDate[0] : startDate,
-      Array.isArray(endDate) ? endDate[0] : endDate
+      Array.isArray(start) ? (start[0] as string) : (start as string),
+      Array.isArray(end) ? (end[0] as string) : (end as string)
     );
-    res.status(200).json({ data, symbol });
+
+    const { isComplete: complete } = data;
+    const status = HttpStatusCodeEnum[complete ? "Success" : "PartialContent"];
+
+    res.status(status).json({ data });
   }
 );
 

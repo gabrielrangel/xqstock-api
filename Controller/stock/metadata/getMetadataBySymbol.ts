@@ -1,8 +1,8 @@
 import { NotFound } from "@api/Error/Http";
-import { MetadataRepository } from "../../../Repository/Stock/Metadata";
+import findOrSendToQueue from "@api/Services/Metadata/find/findOrSendToQueue";
 
 export async function getMetadataBySymbol(symbol: string) {
-  const metadata = await MetadataRepository.findOneBySymbol(symbol);
+  const metadata = findOrSendToQueue(symbol);
 
   if (!metadata) {
     throw NotFound(`Cannot find Stock with symbol: ${symbol}`);

@@ -3,6 +3,12 @@ import axios, { AxiosRequestConfig } from "axios";
 import getEnv from "./getEnv";
 import normalizeAlphaAdvantageObjKeys from "./normalizeAlphaAdvantageObjKeys";
 import { AlphaAdvantageApiError } from "./AlphaAdvantageApiError";
+import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
+
+//@ts-ignore
+const cache = (global.alphaApi = global.alphaApi ?? {});
+
+const lastCalls = (cache.lastCalls = cache.lastCalls?.slice(-5) ?? []);
 
 export default async function sendApiRequest(
   params: Record<string, string>,
@@ -21,15 +27,32 @@ export default async function sendApiRequest(
     method: "GET",
   };
 
-  return axios(request).then((res) => {
-    const errorMsg = res.data["Error Message"] ?? res.data["Note"];
+  if (lastCalls.length >= 5) {
+    const msSinceLastCall = differenceInMilliseconds(
+      new Date(),
+      lastCalls.shift() ?? new Date()
+    );
 
-    if (errorMsg) {
-      const error = AlphaAdvantageApiError(errorMsg, params.function);
-      console.error(error);
-      throw error;
+    if (msSinceLastCall < 60000) {
+      await new Promise((r) => setTimeout(r, 60000 - msSinceLastCall));
     }
+  }
 
-    return res.data as IAlphaApiResponse;
-  });
+  lastCalls.push(new Date());
+
+  console.log(`Updating Stock Database: ${JSON.stringify(request)}`);
+
+  return axios(request)
+    .then((res) => {
+      const errorMsg = res.data["Error Message"] ?? res.data["Note"];
+
+      if (errorMsg) {
+        const error = AlphaAdvantageApiError(errorMsg, params.function);
+        console.error(error);
+        throw error;
+      }
+
+      return res.data;
+    })
+    .then((res) => normalizeAlphaAdvantageObjKeys(res) as IAlphaApiResponse);
 }

@@ -1,31 +1,52 @@
-import { NotFound } from "@api/Error/Http";
-import { MetadataRepository } from "@api/Repository/Stock/Metadata/index";
-import IntradayTimeSeriesRepository from "@api/Repository/Stock/Timeseries/Intraday";
-import { ParsedQs } from "qs";
+import isSaturday from "date-fns/isSaturday";
+import isSunday from "date-fns/isSunday";
+import previousFriday from "date-fns/previousFriday";
+import NoContent from "@api/Error/Http/NoContent";
 import updateHistory from "@api/Services/Session/updateHistory";
+import findMetadataOrSendToQueue from "@api/Services/Metadata/find/findOrSendToQueue";
+import { TStockMetadataModel } from "@api/Models/Stock/Metadata";
+import findTimeSerieOrSendToQueue from "@api/Services/TimeSeries/findOrSendToQueue";
+
+const isWeekend = (date: Date | number) => isSaturday(date) || isSunday(date);
+
+const getLastWeekday = (date: string | number) => {
+  const dateWithoutHours = new Date(date).setHours(0, 0, 0, 0);
+  const lastWeekDay = isWeekend(dateWithoutHours)
+    ? previousFriday(dateWithoutHours)
+    : dateWithoutHours;
+  return new Date(lastWeekDay);
+};
 
 export async function getQuotesBySymbol(
   symbol: string,
-  startDate?: string | ParsedQs | undefined,
-  endDate?: string | ParsedQs | undefined,
+  startDateStr?: string | undefined,
+  endDateStr?: string | undefined,
   sessionId?: string
 ) {
-  const metadata = await MetadataRepository.findOneBySymbol(symbol);
+  const metadata = await findMetadataOrSendToQueue(symbol);
 
-  if (!metadata) {
-    throw NotFound(`Cannot find Stock with symbol: ${symbol}`);
+  if (metadata === null) {
+    throw NoContent(`Trying to get symbol ${symbol} metadata`);
   }
 
-  const query =
-    startDate && endDate
-      ? IntradayTimeSeriesRepository.findByMetadataAndPeriod
-      : IntradayTimeSeriesRepository.findByMetadata;
+  await updateHistory(
+    sessionId ?? "",
+    (metadata as TStockMetadataModel).Symbol
+  );
 
-  const timeseries = await query(metadata, String(endDate), String(startDate));
+  const startDate = startDateStr
+    ? getLastWeekday(startDateStr)
+    : (startDateStr as undefined);
 
-  await updateHistory(sessionId ?? "", metadata.Symbol);
+  const endDate = getLastWeekday(endDateStr ?? Date.now());
 
-  return { metadata, timeseries };
+  const { timeseries, isComplete } = await findTimeSerieOrSendToQueue(
+    metadata as TStockMetadataModel,
+    endDate,
+    startDate
+  );
+
+  return { metadata, timeseries, isComplete };
 }
 
 export default getQuotesBySymbol;

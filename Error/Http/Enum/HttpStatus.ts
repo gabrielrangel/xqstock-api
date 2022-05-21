@@ -4,6 +4,8 @@ export enum HttpStatusEnum {
   Forbidden = "Forbidden",
   NotFound = "Not Found",
   BadGateway = "Bad Gateway",
+  PartialContent = "Partial Content",
+  NoContent = "No Content",
 }
 
 export default HttpStatusEnum;
