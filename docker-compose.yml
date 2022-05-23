@@ -4,7 +4,6 @@ services:
   node:
     build:
       context: .
-      dockerfile: docker/node/Dockerfile
     volumes:
       - .:/app
       - /app/node_modules
