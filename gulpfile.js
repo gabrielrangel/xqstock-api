@@ -32,4 +32,6 @@ gulp.task("nodemon", () => {
   });
 });
 
+gulp.task("server", gulp.series(["build:app", "nodemon"]));
+
 gulp.task("default", gulp.parallel(["build:app"]));
