@@ -5,17 +5,17 @@ import normalizeAlphaAdvantageObjKeys from "./normalizeAlphaAdvantageObjKeys";
 import { AlphaAdvantageApiError } from "./AlphaAdvantageApiError";
 import differenceInMilliseconds from "date-fns/differenceInMilliseconds";
 
+const { API_KEY: apikey, BASE_URI, MAX_REQ_PER_MIN } = getEnv();
+
 //@ts-ignore
 const cache = (global.alphaApi = global.alphaApi ?? {});
 
-const lastCalls = (cache.lastCalls = cache.lastCalls?.slice(-5) ?? []);
+const lastCalls = (cache.lastCalls = cache.lastCalls?.slice(-MAX_REQ_PER_MIN) ?? []);
 
 export default async function sendApiRequest(
   params: Record<string, string>,
   path: string
 ): Promise<IAlphaApiResponse> {
-  const { API_KEY: apikey, BASE_URI } = getEnv();
-
   const queryParams = Object.entries(Object.assign(params, { apikey }))
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
@@ -27,7 +27,7 @@ export default async function sendApiRequest(
     method: "GET",
   };
 
-  if (lastCalls.length >= 5) {
+  if (lastCalls.length >= MAX_REQ_PER_MIN) {
     const msSinceLastCall = differenceInMilliseconds(
       new Date(),
       lastCalls.shift() ?? new Date()
